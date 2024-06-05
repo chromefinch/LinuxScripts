@@ -135,6 +135,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     neofetch
     ncdu
     tmux
+    pipx
     git
     seclists
     sysvinit-utils
@@ -183,7 +184,7 @@ EOF
 
 case $nvidiainstall in
     [yY] ) echo ok, installing cuda;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y nvidia-cuda-toolkit;;
+        sudo apt install -y nvidia-driver nvidia-cuda-toolkit;;
     * ) echo Skipping Nvidia Cuda install;;
 esac
 
