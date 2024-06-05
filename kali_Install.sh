@@ -130,6 +130,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     bpytop
     kate
     flatpak
+    xrdp
     libu2f-udev
     remmina
     neofetch
