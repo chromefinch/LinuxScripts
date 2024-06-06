@@ -31,7 +31,7 @@ print_purple (){
 }
 print_purple  "MoreIPsPlease"
 echo assumes a /24 address space
-[ -z "$1" ] || [ -z "$2" ] && print_yellow "Please provide a startup and iteration number, example:" && echo "./MoreIPsPlease.sh 192.168.1.50 100" && echo "Will populate to 192.168.1.50-150" && exit
+[ -z "$1" ] || [ -z "$2" ] && print_yellow "Please provide a startup and iteration number, example:" && echo "./MoreIPsPlease.sh 192.168.1.50 100" && echo "Will populate 192.168.1.50 to 192.168.1.150" && exit
 if [[ $EUID -ne 0 ]]; then
    print_red "This script must be run as root"
    exit 1
