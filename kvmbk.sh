@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-sudo -n true
-test $? -eq 0 || exit 1 "you should have sudo privilege to run this script"
+if [[ $EUID -ne 0 ]]; then
+   print_red "This script must be run as root"
+   exit 1
+fi
 
 userid=$SUDO_USER
 time=$(date | sed "s/ /_/g")
