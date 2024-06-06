@@ -168,7 +168,7 @@ cp .tmux/.tmux.conf.local /home/$userid/
 sudo chown $userid:$userid /home/$userid/.tmux
 sudo chown $userid:$userid /home/$userid/.tmux.conf.local
 
-#change rdp server port so responder will not conflict
+#change rdp server port so responder will not conflict, you will still need to enable the service
 sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
 #fixes xrdp color prompt
 cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
@@ -187,6 +187,7 @@ EOF
 
 case $nvidiainstall in
     [yY] ) echo ok, installing cuda;
+        sudo apt install -y linux-headers-amd64;
         sudo apt install -y nvidia-driver nvidia-cuda-toolkit;;
     * ) echo Skipping Nvidia Cuda install;;
 esac
