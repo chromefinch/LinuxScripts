@@ -120,6 +120,7 @@ else
 neofetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
 alias k8="kate"
+alias netrset="sudo service networking restart"
 #alreadydoneflag
 EOF
   sudo chown $userid:$userid /home/$userid/$term
