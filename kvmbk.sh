@@ -8,7 +8,7 @@ time=$(date | sed "s/ /_/g")
 
 pwd
 read -p "Where are we backing up to? (absolute path only) " bkpath
-test $bkpath&&echo 'Path already created'||mkdir -p $bkpath;
+test -d $bkpath&&echo 'Path already created'||mkdir -p $bkpath;
 echo backing up to $bkpath
 virsh list --all
 echo "Which VM are we trying to backup? "
