@@ -117,7 +117,7 @@ if [ "$alreadythere" = "$testv" ]; then
   echo "bashrc already updated"
 else
   cat << EOF >> /home/$userid/$term
-neofetch
+fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
 alias k8="kate"
 alias netrset="sudo service networking restart && ip -br a"
@@ -134,7 +134,6 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     xrdp
     libu2f-udev
     remmina
-    neofetch
     ncdu
     tmux
     pipx
@@ -168,6 +167,9 @@ ln -s -f .tmux/.tmux.conf
 cp .tmux/.tmux.conf.local /home/$userid/
 sudo chown $userid:$userid /home/$userid/.tmux
 sudo chown $userid:$userid /home/$userid/.tmux.conf.local
+
+wget 'https://github.com/fastfetch-cli/fastfetch/releases/download/2.15.0/fastfetch-linux-amd64.deb' && sudo dpkg -i fastfetch-linux-amd64.deb
+rm -f fastfetch-linux-amd64.deb
 
 #change rdp server port so responder will not conflict, you will still need to enable the service
 sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
