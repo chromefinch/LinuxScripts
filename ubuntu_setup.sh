@@ -59,7 +59,7 @@ echo or
 echo hit Ctrl+C to quit
 echo -e "\n"
 sleep 6
-
+sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 echo Updating before install... 
 echo -e "\n"
 sudo apt-get update >> /dev/null 2>&1
@@ -105,7 +105,7 @@ if [ "$alreadythere" = "$testv" ]; then
   echo "bashrc already updated"
 else
   cat << EOF >> /home/$userid/$term
-neofetch
+fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
 alias k8="kate"
 #alreadydoneflag
@@ -117,7 +117,7 @@ echo installing the must-have pre-requisites
 while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p >> /dev/null 2>&1 && echo -e "\n" $p installed... "\n" ; done < <(cat << "EOF"
     bpytop
     python3
-    neofetch
+    fastfetch
     kate
     curl
     gcc
