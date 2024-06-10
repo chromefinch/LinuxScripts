@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-
-sudo -n true
-test $? -eq 0 || exit 1 "you should have sudo privilege to run this script"
+print_red (){
+	echo -e "\033[0;31m$1\033[0m"
+}
+if [[ $EUID -ne 0 ]]; then
+   print_red "This script must be run as root"
+   exit 1
+fi
 echo "This VM restore script assumes you previously backed up with kvmbk.sh and that you are using .qcow2 or .img disks"
 echo ""
 userid=$SUDO_USER

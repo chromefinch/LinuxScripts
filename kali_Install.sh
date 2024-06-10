@@ -21,11 +21,15 @@ cat <<'EOF'
                                             c
                                             .'
                                              .
-version 1.5
+version 1.6
 EOF
-sudo -n true
-test $? -eq 0 || exit 1 "you should have sudo privilege to run this script"
-
+print_red (){
+	echo -e "\033[0;31m$1\033[0m"
+}
+if [[ $EUID -ne 0 ]]; then
+   print_red "This script must be run as root"
+   exit 1
+fi
 read -p "Do you want to roll keys? (y/N) " yn
 case $yn in
     [yY] ) echo "ok, here we go!" ;
@@ -139,6 +143,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     pipx
     git
     seclists
+    netexec
     sysvinit-utils
     gnome-shell-extension-manager
     gobuster
@@ -168,10 +173,14 @@ cp .tmux/.tmux.conf.local /home/$userid/
 sudo chown $userid:$userid /home/$userid/.tmux
 sudo chown $userid:$userid /home/$userid/.tmux.conf.local
 
-wget 'https://github.com/fastfetch-cli/fastfetch/releases/download/2.15.0/fastfetch-linux-amd64.deb' && sudo dpkg -i fastfetch-linux-amd64.deb
-rm -f fastfetch-linux-amd64.deb
+ff="fastfetch"
+fastfile='fastfetch-linux-amd64.deb'
+echo downloading $ff...
+test -f /home/$userid/Downloads/$fastfile&&echo $ff' already downloaded'||wget 'https://github.com/fastfetch-cli/fastfetch/releases/download/2.15.0/fastfetch-linux-amd64.deb' -P /home/$userid/Downloads
+which "$ff" | grep -o "$ff" > /dev/null &&  echo $ff' already installed' || sudo dpkg -i /home/$userid/Downloads/$fastfile
 
 #change rdp server port so responder will not conflict, you will still need to enable the service
+echo xrdp port changed to 3390
 sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
 #fixes xrdp color prompt
 cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules

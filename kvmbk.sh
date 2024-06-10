@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-
+print_red (){
+	echo -e "\033[0;31m$1\033[0m"
+}
 if [[ $EUID -ne 0 ]]; then
    print_red "This script must be run as root"
    exit 1
 fi
-
 userid=$SUDO_USER
 time=$(date | sed "s/ /_/g")
 

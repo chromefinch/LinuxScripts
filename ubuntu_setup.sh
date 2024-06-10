@@ -6,18 +6,20 @@ cat <<'EOF'
 (_) |   |
   \\  --- _/
      ---(_)
-version 1.5
+version 1.6
 EOF
 set -eu -o pipefail # fail on error and report it, debug all lines
-
-sudo -n true
-test $? -eq 0 || exit 1 "you should have sudo privilege to run this script"
-
+print_red (){
+	echo -e "\033[0;31m$1\033[0m"
+}
+if [[ $EUID -ne 0 ]]; then
+   print_red "This script must be run as root"
+   exit 1
+fi
 userid=$SUDO_USER
 cd /home/$userid
 echo $(pwd)
-
-
+vmwaredefault='https://download3.vmware.com/software/WKST-1751-LX/VMware-Workstation-Full-17.5.1-23298084.x86_64.bundle'
 read -p "Do you want to install Signal? (Y/n) " yn
 case $yn in
     [nN] ) echo "that's weird...";;
@@ -171,7 +173,6 @@ cp .tmux/.tmux.conf.local /home/$userid/
 sudo chown $userid:$userid /home/$userid/.tmux
 sudo chown $userid:$userid /home/$userid/.tmux.conf.local
 
-
 case $chromeinstall in
         [nN] ) echo "Skipping Google Chrome install";;
         * ) echo cd /home/$userid/Downloads;
@@ -205,7 +206,6 @@ esac
 
 case $vmwareinstall in 
     [yY] ) echo Lets install VMware Workstation;
-        vmwaredefault='https://download3.vmware.com/software/WKST-1751-LX/VMware-Workstation-Full-17.5.1-23298084.x86_64.bundle';
         read -t 45 -p "Enter download URL of VMware Workstation [$vmwaredefault]:" vmwarev;
         vmwarefile=${vmwarev:-$vmwaredefault};
         vmwareE=$(echo /home/$userid/Downloads/$vmwarefile | grep -o "VMware-Workstation.*");
