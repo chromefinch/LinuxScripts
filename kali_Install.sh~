@@ -26,7 +26,6 @@ cat <<'EOF'
                                              .
 version 1.6
 EOF
-echo -e ${clear}
 print_red (){
 	echo -e "\033[0;31m$1\033[0m"
 }
