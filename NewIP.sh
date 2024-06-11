@@ -66,7 +66,7 @@ sleep 1
 echo 1
 sleep 1
 echo blastoff!
-sed -E -i "s|.*iface eth0 inet dhcp|#iface eth0 inet dhcp\niface eth0 inet static\n       address $ipaddr/24\n       gateway $gateway|g" /etc/network/interfaces
+sed -E -i "s|.*iface eth0 inet dhcp|#iface eth0 inet dhcp\niface eth0 inet static\n       address $ipaddr\/24\n       gateway $gateway|g" /etc/network/interfaces
 sed -E -i "s/.*eth0:$ipaddr_last_Oct.*//g" /etc/network/interfaces
 sed -E -i "s/.*$ipaddr.*//g" /etc/network/interfaces
 sed -i '/^$/d' /etc/network/interfaces
