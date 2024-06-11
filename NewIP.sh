@@ -106,7 +106,10 @@ case $yn in
             print_yellow "Updating IPs";
             sudo cat ~/NewIP.tmp > /etc/network/interfaces;
             sudo ifdown eth0;
+            sudo service networking restart;
             sudo ifup eth0;
+            sudo service networking restart;
+            sleep 3;
             sudo service networking restart && ip -br a;
             rm ~/NewIP.tmp;
             print_green "[+] Done!";;
