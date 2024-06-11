@@ -105,6 +105,8 @@ case $yn in
             cp /etc/network/interfaces $bkpath/interfaces_as_of_$time;
             print_yellow "Updating IPs";
             sudo cat ~/NewIP.tmp > /etc/network/interfaces;
+            sudo ifdown eth0;
+            sudo ifup eth0;
             sudo service networking restart && ip -br a;
             rm ~/NewIP.tmp;
             print_green "[+] Done!";;
