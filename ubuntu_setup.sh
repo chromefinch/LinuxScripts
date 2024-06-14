@@ -7,6 +7,11 @@ cat <<'EOF'
   \\  --- _/
      ---(_)
 version 1.6
+Consider the following gnome extensions!
+App Icons Taskbar
+https://extensions.gnome.org/extension/4944/app-icons-taskbar/
+Vitals
+https://extensions.gnome.org/extension/1460/vitals/
 EOF
 set -eu -o pipefail # fail on error and report it, debug all lines
 print_red (){
@@ -47,8 +52,8 @@ read -p "Do you want some Nvidia? This installs cuda for Hashcat. (y/N) " nvidia
 read -p "Do you want some VMware? (y/N) " vmwareinstall
 
 echo -e "\n"
-echo adding full Graphics Driver repo, hit enter to apply...
-sudo add-apt-repository ppa:graphics-drivers/ppa >> /dev/null 2>&1
+#echo adding full Graphics Driver repo, hit enter to apply...
+#sudo add-apt-repository ppa:graphics-drivers/ppa >> /dev/null 2>&1
 
 #No license no sublime use kate instead
 #echo grabbing sublime text repo info...
@@ -112,7 +117,7 @@ alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
 alias k8="kate"
 #alreadydoneflag
 EOF
-  sudo chown $userid:$userid /home/$userid/$term
+sudo chown $userid:$userid /home/$userid/$term
 fi
 echo -e "\n"
 echo installing the must-have pre-requisites
