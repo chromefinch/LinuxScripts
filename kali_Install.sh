@@ -86,10 +86,10 @@ read -p "Do you want to install Google Chrome? (Y/n) " chromeinstall
 
 echo Updating before install... 
 echo -e "\n"
-sudo apt-get update  >> /dev/null 2>&1
+sudo apt update  >> /dev/null 2>&1
 echo "...doing upgrade..."
 echo -e "\n"
-sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y  >> /dev/null 2>&1
+sudo apt upgrade -y
 echo "....doing dist-upgrade...."
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y  >> /dev/null 2>&1
