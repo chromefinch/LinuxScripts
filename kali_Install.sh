@@ -142,8 +142,8 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     xrdp
     libu2f-udev
     remmina
-    ncdu
     tmux
+    ncdu
     pipx
     git
     seclists
