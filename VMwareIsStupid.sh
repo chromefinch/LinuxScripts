@@ -14,7 +14,8 @@ echo Lets install VMware Workstation $vmwareversion
 echo downloading $vmwareE...
 test -f /home/$userid/Downloads/$vmwareE&&echo 'VMware already downloaded' || echo please download $vmwarefile and put it in /home/$userid/Downloads
 echo getting fixes
-wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz
+test -f /home/$userid/Downloads/workstation-$vmwareFIXversion.tar.gz&&echo 'VMware fix already downloaded' || wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz -P /home/$userid/Downloads
+cd /home/$userid/Downloads
 tar -xzf workstation-$vmwareFIXversion.tar.gz
 cd vmware-host-modules-workstation-$vmwareFIXversion
 tar -cf vmmon.tar vmmon-only
