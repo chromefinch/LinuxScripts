@@ -19,10 +19,9 @@ tar -xzf workstation-$vmwareFIXversion.tar.gz
 cd vmware-host-modules-workstation-$vmwareFIXversion
 tar -cf vmmon.tar vmmon-only
 tar -cf vmnet.tar vmnet-only
-cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/
 sudo chown $userid:$userid /home/$userid/Downloads/*
-sudo vmware-modconfig --console --install-all
 sudo bash /home/$userid/Downloads/$vmwareE --eulas-agreed --console
+cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/
 sudo vmware-modconfig --console --install-all
 echo "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues"
 echo this is dumb
