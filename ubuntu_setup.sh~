@@ -215,7 +215,7 @@ esac
 case $vmwareinstall in
     [yY] ) echo Lets install VMware Workstation $vmwareversion
         echo downloading $vmwareE...;
-        test -f /home/$userid/Downloads/$vmwareE&&echo 'VMware already downloaded' || echo please download $vmwarefile and put it in /home/$userid/Downloads;
+        test -f /home/$userid/Downloads/$vmwareE&&echo 'VMware already downloaded' || wget $vmwarefile -P /home/$userid/Downloads;
         echo getting fixes;
         wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz;
         tar -xzf workstation-$vmwareFIXversion.tar.gz;
