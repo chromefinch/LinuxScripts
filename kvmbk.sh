@@ -1,4 +1,27 @@
 #!/usr/bin/env bash
+green='\033[0;32m'
+clear='\033[0m'
+echo -e ${green}
+cat <<'EOF'
+     .
+     .
+  . ;.
+   .;
+    ;;.
+  ;.;;
+  ;;;;.
+  ;;;;;
+  ;;;;;
+  ;;;;;
+  ;;;;;
+  ;;;;;
+..;;;;;..
+ ':::::'
+   ':`
+
+version 1
+EOF
+echo -e ${clear}
 print_red (){
 	echo -e "\033[0;31m$1\033[0m"
 }
@@ -9,7 +32,11 @@ fi
 userid=$SUDO_USER
 time=$(date | sed "s/ /_/g")
 
+echo "current dir"
+echo ""
 pwd
+ls -1
+echo ""
 read -p "Where are we backing up to? (absolute path only) " bkpath
 test -d $bkpath&&echo 'Path already created'||mkdir -p $bkpath;
 echo backing up to $bkpath
