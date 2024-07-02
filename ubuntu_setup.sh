@@ -131,6 +131,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p >
     kate
     curl
     gcc
+    fzf
     clamav
     tmux
     ncdu
