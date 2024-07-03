@@ -144,6 +144,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     flatpak
     xrdp
     libu2f-udev
+    spice-vdagent
     remmina
     tmux
     ncdu
