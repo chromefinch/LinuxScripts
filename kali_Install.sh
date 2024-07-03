@@ -87,22 +87,25 @@ read -p "Do you want to install Google Chrome? (Y/n) " chromeinstall
 echo Updating before install... 
 echo -e "\n"
 sudo apt update  >> /dev/null 2>&1
-echo "...doing upgrade..."
+echo "...doing full-upgrade..."
 echo -e "\n"
-sudo apt upgrade -y
-echo "....doing dist-upgrade...."
+sudo apt full-upgrade
+echo "....doing upgrade...."
+echo -e "\n"
+sudo apt update && sudo apt upgrade -y
+echo ".....doing dist-upgrade....."
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y  >> /dev/null 2>&1
-echo  ".....doing autoremove....."
+echo  "......doing autoremove......"
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get autoremove -y  >> /dev/null 2>&1
-echo  "......doing autoclean......"
+echo  ".......doing autoclean......."
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get autoclean -y  >> /dev/null 2>&1
-echo ".......Fixing Broken Packages......."
+echo "........Fixing Broken Packages........"
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt --fix-broken install -y  >> /dev/null 2>&1
-echo "........updating searchsploit........"
+echo ".........updating searchsploit........."
 sudo searchsploit -u && echo -e "\n"
 echo -e "\n"
 sudo DEBIAN_FRONTEND=noninteractive apt-get update  >> /dev/null 2>&1
