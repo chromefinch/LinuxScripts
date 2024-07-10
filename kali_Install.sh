@@ -129,7 +129,7 @@ if [ "$alreadythere" = "$testv" ]; then
 else
   cat << EOF >> /home/$userid/$term
 fastfetch
-alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
+alias update="sudo apt update && sudo apt upgrade -y && sudo searchsploit -u"
 alias k8="kate"
 alias netrset="sudo service networking restart && ip -br a"
 #alreadydoneflag
