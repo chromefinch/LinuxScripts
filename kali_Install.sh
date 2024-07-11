@@ -152,6 +152,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     git
     seclists
     netexec
+    gowitness
     sysvinit-utils
     gnome-shell-extension-manager
     gobuster
