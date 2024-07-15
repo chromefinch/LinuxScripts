@@ -217,7 +217,8 @@ esac
 case $lynisrun in
     [yY] ) echo "Running lynis. Please wait...forever...";
         sudo lynis audit system > /home/$userid/lynis_log.txt;
-        sudo netstat -tulpn > /home/$userid/open_ports_log.txt;;
+        sudo netstat -tulpn > /home/$userid/open_ports_log.txt;
+	sudo gzip -d /usr/share/wordlists/rockyou.txt.gz;;
     * ) echo "Skipping lynis run";;
 esac
 
