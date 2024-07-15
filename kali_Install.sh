@@ -191,6 +191,7 @@ which "$ff" | grep -o "$ff" > /dev/null &&  echo $ff' already installed' || sudo
 #change rdp server port so responder will not conflict, you will still need to enable the service
 echo xrdp port changed to 3390
 sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
+echo "gnome-session" | tee /home/$userid/.xsession
 #fixes xrdp color prompt
 cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
 polkit.addRule(function(action, subject) {
