@@ -159,6 +159,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  
     hakrawler
     lynis
     net-tools
+    mingw-w64
 EOF
 )
 
