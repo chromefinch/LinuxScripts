@@ -38,6 +38,8 @@ if [[ $EUID -ne 0 ]]; then
    print_red "This script must be run as root"
    exit 1
 fi
+gateway=$(route -n | grep 'UG[ \t]' | awk '{print $2}' | head -n1)
+currentIP=$(ip -br a | sed "s/127.0.0.1//g" | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n1)
 echo IP range to populate
 last_Oct=$(echo $1 | awk -F"." '{print $4}')
 finial_octet=$(($last_Oct+$2))
@@ -53,8 +55,13 @@ source /etc/network/interfaces.d/*
 auto lo
 iface lo inet loopback
 auto eth0
-iface eth0 inet dhcp
+#iface eth0 inet dhcp
+iface eth0 inet static
+        address sedfailipaddr/24
+        gateway sedfailgateway
 EOF
+sed -i "s/sedfailipaddr/$ipaddr/g" ~/MoreIPsPlease.tmp
+sed -i "s/sedfailgateway/$gateway/g" ~/MoreIPsPlease.tmp
 i=$last_Oct
 while [ $i -le $finial_octet ];
     do
