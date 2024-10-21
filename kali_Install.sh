@@ -138,7 +138,7 @@ EOF
   sudo chown $userid:$userid /home/$userid/$term
 fi
 
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor > packages.microsoft.gpg
 sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
 echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
 sudo rm -f packages.microsoft.gpg
@@ -198,27 +198,28 @@ which "$ff" | grep -o "$ff" > /dev/null &&  echo $ff' already installed' || sudo
 
 case $xrdpinstall in
         [nN] ) echo "Skipping xrdp configs";;
-        * ) echo "Updating xrdp confgs to Gnome Desktop & non standard port" 
-            #change rdp server port so responder will not conflict, you will still need to enable the service
-            echo xrdp port changed to 3390
-            sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
-            sudo apt install -y kali-desktop-gnome
-            echo "gnome-session" | tee /home/$userid/.xsession
-            #fixes xrdp color prompt
-            cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
-            polkit.addRule(function(action, subject) {
-            if ((action.id == "org.freedesktop.color-manager.create-device" ||
-            action.id == "org.freedesktop.color-manager.create-profile" ||
-            action.id == "org.freedesktop.color-manager.delete-device" ||
-            action.id == "org.freedesktop.color-manager.delete-profile" ||
-            action.id == "org.freedesktop.color-manager.modify-device" ||
-            action.id == "org.freedesktop.color-manager.modify-profile") &&
-            subject.isInGroup("{users}")) {
-            return polkit.Result.YES;
-            }
-            });
-            EOF
+        * ) echo "Updating xrdp confgs to Gnome Desktop & non standard port";
+            #change rdp server port so responder will not conflict, you will still need to enable the service;
+            echo xrdp port changed to 3390;
+            sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini;
+            sudo apt install -y kali-desktop-gnome;
+            echo "gnome-session" | tee /home/$userid/.xsession;;
 esac
+
+#fixes xrdp color prompt
+cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
+polkit.addRule(function(action, subject) {
+if ((action.id == "org.freedesktop.color-manager.create-device" ||
+action.id == "org.freedesktop.color-manager.create-profile" ||
+action.id == "org.freedesktop.color-manager.delete-device" ||
+action.id == "org.freedesktop.color-manager.delete-profile" ||
+action.id == "org.freedesktop.color-manager.modify-device" ||
+action.id == "org.freedesktop.color-manager.modify-profile") &&
+subject.isInGroup("{users}")) {
+return polkit.Result.YES;
+}
+});
+EOF
 
 case $nvidiainstall in
     [yY] ) echo ok, installing cuda;
