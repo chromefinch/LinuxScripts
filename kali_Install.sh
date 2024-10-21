@@ -84,6 +84,8 @@ cd /home/$userid/Downloads
 
 read -p "Do you want to install Google Chrome? (Y/n) " chromeinstall
 
+read -p "Will you be using xrdp? (Y/n) " xrdpinstall
+
 echo Updating before install... 
 echo -e "\n"
 sudo apt update  >> /dev/null 2>&1
@@ -136,10 +138,17 @@ EOF
   sudo chown $userid:$userid /home/$userid/$term
 fi
 
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+sudo rm -f packages.microsoft.gpg
+
+
 echo installing the must-have pre-requisites like flatpack and the like
 while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  >> /dev/null 2>&1 && echo -e "\n" $p installed... "\n" ; done < <(cat << "EOF"
     bpytop
     flatpak
+    code
     xrdp
     libu2f-udev
     spice-vdagent
@@ -187,24 +196,29 @@ echo downloading $ff...
 test -f /home/$userid/Downloads/$fastfile&&echo $ff' already downloaded'||wget 'https://github.com/fastfetch-cli/fastfetch/releases/download/2.15.0/fastfetch-linux-amd64.deb' -P /home/$userid/Downloads
 which "$ff" | grep -o "$ff" > /dev/null &&  echo $ff' already installed' || sudo dpkg -i /home/$userid/Downloads/$fastfile
 
-#change rdp server port so responder will not conflict, you will still need to enable the service
-echo xrdp port changed to 3390
-sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
-echo "gnome-session" | tee /home/$userid/.xsession
-#fixes xrdp color prompt
-cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
-polkit.addRule(function(action, subject) {
- if ((action.id == "org.freedesktop.color-manager.create-device" ||
- action.id == "org.freedesktop.color-manager.create-profile" ||
- action.id == "org.freedesktop.color-manager.delete-device" ||
- action.id == "org.freedesktop.color-manager.delete-profile" ||
- action.id == "org.freedesktop.color-manager.modify-device" ||
- action.id == "org.freedesktop.color-manager.modify-profile") &&
- subject.isInGroup("{users}")) {
- return polkit.Result.YES;
- }
- });
-EOF
+case $xrdpinstall in
+        [nN] ) echo "Skipping xrdp configs";;
+        * ) echo "Updating xrdp confgs to Gnome Desktop & non standard port" 
+            #change rdp server port so responder will not conflict, you will still need to enable the service
+            echo xrdp port changed to 3390
+            sed -i 's/port=3389/port=3390/g' /etc/xrdp/xrdp.ini
+            sudo apt install -y kali-desktop-gnome
+            echo "gnome-session" | tee /home/$userid/.xsession
+            #fixes xrdp color prompt
+            cat << EOF > /etc/polkit-1/rules.d/02-allow-colord.rules
+            polkit.addRule(function(action, subject) {
+            if ((action.id == "org.freedesktop.color-manager.create-device" ||
+            action.id == "org.freedesktop.color-manager.create-profile" ||
+            action.id == "org.freedesktop.color-manager.delete-device" ||
+            action.id == "org.freedesktop.color-manager.delete-profile" ||
+            action.id == "org.freedesktop.color-manager.modify-device" ||
+            action.id == "org.freedesktop.color-manager.modify-profile") &&
+            subject.isInGroup("{users}")) {
+            return polkit.Result.YES;
+            }
+            });
+            EOF
+esac
 
 case $nvidiainstall in
     [yY] ) echo ok, installing cuda;
