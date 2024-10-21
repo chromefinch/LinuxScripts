@@ -58,7 +58,7 @@ echo -e "\n"
 #echo adding full Graphics Driver repo, hit enter to apply...
 #sudo add-apt-repository ppa:graphics-drivers/ppa >> /dev/null 2>&1
 
-#No license no sublime use kate instead
+#No license no sublime use Code instead
 #echo grabbing sublime text repo info...
 #wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
 #echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
@@ -117,7 +117,6 @@ else
   cat << EOF >> /home/$userid/$term
 fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
-alias k8="kate"
 #alreadydoneflag
 EOF
 sudo chown $userid:$userid /home/$userid/$term
@@ -128,7 +127,6 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p >
     bpytop
     python3
     fastfetch
-    kate
     curl
     gcc
     fzf
