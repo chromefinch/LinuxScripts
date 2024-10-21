@@ -130,7 +130,6 @@ else
   cat << EOF >> /home/$userid/$term
 fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo searchsploit -u"
-alias k8="kate"
 alias netrset="sudo service networking restart && ip -br a"
 #alreadydoneflag
 EOF
@@ -140,7 +139,6 @@ fi
 echo installing the must-have pre-requisites like flatpack and the like
 while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p  >> /dev/null 2>&1 && echo -e "\n" $p installed... "\n" ; done < <(cat << "EOF"
     bpytop
-    kate
     flatpak
     xrdp
     libu2f-udev
