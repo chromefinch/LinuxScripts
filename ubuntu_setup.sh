@@ -136,6 +136,7 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p >
     git
     fzf
     hashcat
+    feroxbuster
     gufw
     signal-desktop
     flatpak
