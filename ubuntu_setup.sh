@@ -214,22 +214,23 @@ esac
 
 case $vmwareinstall in
     [yY] ) echo Lets install VMware Workstation $vmwareversion
-        echo downloading $vmwareE...;
-        test -f /home/$userid/Downloads/$vmwareE&&echo 'VMware already downloaded' || echo please download $vmwarefile and put it in /home/$userid/Downloads;
-        echo getting fixes;
-        test -f /home/$userid/Downloads/workstation-$vmwareFIXversion.tar.gz&&echo 'VMware fix already downloaded' || wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz -P /home/$userid/Downloads
-        cd /home/$userid/Downloads
-        tar -xzf workstation-$vmwareFIXversion.tar.gz;
-        cd vmware-host-modules-workstation-$vmwareFIXversion;
-        tar -cf vmmon.tar vmmon-only;
-        tar -cf vmnet.tar vmnet-only;
-        sudo chown $userid:$userid /home/$userid/Downloads/*;
-        sudo bash /home/$userid/Downloads/$vmwareE --eulas-agreed --console;
-        cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/;
-        sudo vmware-modconfig --console --install-all;
-        echo "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues";
-        echo this is dumb;
-        vmware --version;;
+    	echo "JK, I'm not supporting this. You can download it here: https://softwareupdate.vmware.com/cds/vmw-desktop/ws/";;
+        #echo downloading $vmwareE...;
+        #test -f /home/$userid/Downloads/$vmwareE&&echo 'VMware already downloaded' || echo please download $vmwarefile and put it in /home/$userid/Downloads;
+        #echo getting fixes;
+        #test -f /home/$userid/Downloads/workstation-$vmwareFIXversion.tar.gz&&echo 'VMware fix already downloaded' || wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz -P /home/$userid/Downloads
+        #cd /home/$userid/Downloads
+        #tar -xzf workstation-$vmwareFIXversion.tar.gz;
+        #cd vmware-host-modules-workstation-$vmwareFIXversion;
+        #tar -cf vmmon.tar vmmon-only;
+        #tar -cf vmnet.tar vmnet-only;
+        #sudo chown $userid:$userid /home/$userid/Downloads/*;
+        #sudo bash /home/$userid/Downloads/$vmwareE --eulas-agreed --console;
+        #cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/;
+        #sudo vmware-modconfig --console --install-all;
+        #echo "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues";
+        #echo this is dumb;
+        #vmware --version;;
     * ) echo Skipping VMware Workstation install. Linux KVM FTW...;;
 esac
 read -p "Would you like to restart now? (y/N) " yn
