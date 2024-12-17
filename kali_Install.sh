@@ -248,6 +248,15 @@ case $chromeinstall in
             gc="google-chrome";
             which "$gc" | grep -o "$gc" > /dev/null &&  echo $gc' already installed' || sudo dpkg -i /home/$userid/Downloads/$chromefile;;
 esac
+### Hostname randomizer  - 12/17/2024 ###
+
+old=$(cat /etc/hostname)
+new=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c12)
+sed -i "s/$old/$new/g" /etc/hosts
+sed -i "s/$old/$new/g" /etc/hostname
+hostname "$new"
+
+### End Hostname randomizer ###
 
 read -p "Would you like to restart now? (y/N) " yn
 case $yn in 
