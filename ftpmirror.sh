@@ -29,6 +29,7 @@ while IFS= read -r ip; do
         echo "Successfully downloaded from $ip."
     else
         echo "Failed to download from $ip."
+        rm -R $OUTPUT_DIR/$ip 2> /dev/null
     fi
     
     # Optional delay between requests
