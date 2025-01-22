@@ -1,5 +1,5 @@
 #!/bin/bash
-# written by deepseek llm
+# written by deepseek llm, edited by me
 # Get output directory from user
 read -p "Enter the output directory (e.g., ./results): " OUTPUT_DIR
 # If no input is given, default to './results'
@@ -21,11 +21,8 @@ fi
 while IFS= read -r ip; do
     echo "Processing $ip..."
     
-    # Create a directory for this IP if it doesn't exist
-    mkdir -p "$OUTPUT_DIR/$ip"
-    
     # Download using wget with mirror mode, timeout of 10 seconds, and suppress errors
-    wget -m --timeout=10 ftp://anonymous@$ip:21 -P "$OUTPUT_DIR/$ip" 2> /dev/null
+    wget -m --timeout=10 ftp://anonymous@$ip:21 -P "$OUTPUT_DIR" 2> /dev/null
     
     # Check if the download was successful
     if [ $? -eq 0 ]; then
