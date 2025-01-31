@@ -101,6 +101,7 @@ sudo snap install pycharm-community --classic
 sudo snap install obsidian --classic
 sudo snap install code --classic
 sudo snap install seclists
+sudo snap install tree
 echo -e "\n"
 
 echo adding update alias and terminal candy
@@ -131,7 +132,6 @@ while read -r p ; do sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $p >
     gcc
     fzf
     clamav
-    tree
     tmux
     ncdu
     git
