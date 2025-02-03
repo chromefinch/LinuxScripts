@@ -112,7 +112,7 @@ install() {
     chromeInstall
     lxcInstall
     nvidiaInstall
-    fastFetchInstall
+    printInstall
     tmuxStuff
     secondUser
     allDone
@@ -271,7 +271,7 @@ nvidiaInstall() {
     fi
 }
 
-fastFetchInstall() {
+printInstall() {
     msg_info "Assessing Fingerprint HW status"
     if ! lsusb | grep -q "Fingerprint"; then
         msg_ok "No fingerprint found, skipping"
@@ -375,31 +375,31 @@ custom() {
   fi
   header_info
 
+    read -p "Do you want to install Google Chrome? (Y/n) " chromeq
+    read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
+    read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
+    read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
     signalRepo
     fastFetchRepo
     letsUpdate
     apps
-    read -p "Do you want to install Google Chrome? (Y/n) " chromeq
         case $chromeq in
                 [nN]) msg_ok "Skipping Google Chrome install";;
                 *) chromeInstall;;
         esac
-    read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
         case $kvmq in
                 [nN]) msg_ok "Skipping pcie passthrough";;
                 *) lxcInstall;;
         esac
-    read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
         case $nvidiaq in
                 [nN]) msg_ok "Skipping Nvidia install";;
                 *) nvidiaInstall;;
         esac
-    read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
         case $flatq in
                 [nN]) msg_ok "Skipping Flathub goodies install";;
                 *) flatHub;;
         esac
-    fastFetchInstall
+    printInstall
     tmuxStuff
     secondUser
     allDone
@@ -432,4 +432,3 @@ case $CHOICE in
     exit 0
     ;;
 esac
-
