@@ -92,6 +92,8 @@ userid=$SUDO_USER
 install() {
     STD="silent"
     header_info
+    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
+    secondUser
     msg_info "Launching no touch in - 5"
     sleep 1
     msg_info "4"
@@ -114,7 +116,6 @@ install() {
     nvidiaInstall
     printInstall
     tmuxStuff
-    secondUser
     allDone
 }
 
@@ -352,9 +353,9 @@ esac
 
 allDone() {
   msg_ok "Ok, I think we're done!\n"
-  read -p "Would you like to restart now? (y/N) " yn
-  case $yn in 
+  case $rebootq in 
     [yY]) echo "install app icons taskbar by visiting the following link: https://extensions.gnome.org/extension/4944/app-icons-taskbar/"
+        sleep 3
         sudo reboot
         return 1
         ;;
@@ -375,10 +376,13 @@ custom() {
   fi
   header_info
 
+    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
     read -p "Do you want to install Google Chrome? (Y/n) " chromeq
     read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
     read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
     read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
+    read -p "Do you want to enable fingerprint in terminal?  (Y/n) " printq
+    secondUser
     signalRepo
     fastFetchRepo
     letsUpdate
@@ -399,9 +403,11 @@ custom() {
                 [nN]) msg_ok "Skipping Flathub goodies install";;
                 *) flatHub;;
         esac
-    printInstall
+        case $printq in
+                [nN]) msg_ok "Skipping fingerprint in terminal";;
+                *) printInstall;;
+        esac
     tmuxStuff
-    secondUser
     allDone
 }
 
