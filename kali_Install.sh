@@ -262,6 +262,6 @@ read -p "Would you like to restart now? (y/N) " yn
 case $yn in 
     [yY] )sudo reboot;
         break;;
-    * ) echo "you should restart soonest";
+    * ) echo "you should restart soonest. Install app icons taskbar by visiting the following link: https://extensions.gnome.org/extension/4944/app-icons-taskbar/";
         exit;;
 esac
