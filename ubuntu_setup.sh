@@ -94,6 +94,7 @@ install() {
     header_info
     read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
     secondUser
+    header_info
     msg_info "Launching no touch in - 5"
     sleep 1
     msg_info "4"
