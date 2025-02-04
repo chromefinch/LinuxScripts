@@ -379,7 +379,7 @@ custom() {
 OPTIONS=(Full "Install (Apps etc, does not roll keys)" \
          Custom "Install, lotsa options")
 
-CHOICE=$(whiptail --backtitle "Ubuntu Helper Scripts" --title "Install Packages" --menu "Select an option:" 10 58 2 \
+CHOICE=$(whiptail --backtitle "Kali Post-Install Script" --title "Install Packages" --menu "Select an option:" 10 58 2 \
           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
 
 case $CHOICE in
