@@ -451,6 +451,46 @@ verboseMenu() {
           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
 }
 
+chromeMenu() {
+  OPTIONS=( N "No, skip Chrome" \
+            Y "Yes, install Chrome")
+
+  chromeq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Google Chrome Install" --menu "Do you want to install Google Chrome?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+kvmMenu() {
+  OPTIONS=( N "No, skip PCIe passthrough" \
+            Y "Yes, enable PCIe passthrough")
+
+  kvmq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "PCIe Passthrough" --menu "Do you want to enable PCIe passthrough?" 10 58 2 \
+           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+nvidiaMenu() {
+  OPTIONS=( N "No, skip Nvidia/CUDA" \
+            Y "Yes, install Nvidia/CUDA for Hashcat")
+
+  nvidiaq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Nvidia/CUDA Install" --menu "Do you want to install Nvidia/CUDA for Hashcat?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+flatMenu() {
+  OPTIONS=( N "No, skip Flathub goodies" \
+            Y "Yes, install Flathub goodies")
+
+  flatq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Flathub Goodies Install" --menu "Do you want to install Flathub goodies?" 10 58 2 \
+           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+fingerprintMenu() {
+  OPTIONS=( N "No, skip fingerprint in terminal" \
+            Y "Yes, enable fingerprint in terminal")
+
+  printq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Fingerprint in Terminal" --menu "Do you want to enable fingerprint in terminal?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
 allDone() {
   msg_ok "Ok, I think we're done!\n"
   case $rebootq in 
@@ -479,11 +519,11 @@ custom() {
     rebootMenu
     vmwareMenu
     secondUser
-    read -p "Do you want to install Google Chrome? (Y/n) " chromeq
-    read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
-    read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
-    read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
-    read -p "Do you want to enable fingerprint in terminal?  (Y/n) " printq
+    chromeMenu
+    kvmMenu
+    nvidiaMenu
+    flatMenu
+    fingerprintMenu
     signalRepo
     fastFetchRepo
     letsUpdate
