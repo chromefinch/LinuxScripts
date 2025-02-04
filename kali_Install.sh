@@ -352,10 +352,6 @@ custom() {
     mscode
     letsUpdate
     apps
-        case $randoq in
-                [nN]) msg_ok "Skipping machine rename";;
-                *) rando;;
-        esac
         case $chromeq in
                 [nN]) msg_ok "Skipping Google Chrome install";;
                 *) chromeInstall;;
@@ -369,6 +365,10 @@ custom() {
                 *) xrdpInstall;;
         esac
     tmuxStuff
+        case $randoq in
+                [nN]) msg_ok "Skipping machine rename";;
+                *) rando;;
+        esac
         case $lynisq in
                 [yY]) lynisrun;;
                 *) msg_ok "Skipping lynis run";;
