@@ -62,9 +62,15 @@ YW=$(echo "\033[33m")
 BL=$(echo "\033[36m")
 RD=$(echo "\033[01;31m")
 GN=$(echo "\033[1;92m")
+BGN=$(echo "\033[4;92m")
+DGN=$(echo "\033[32m")
 BFR="\\r\\033[K"
 HOLD="-"
+BOLD=$(echo "\033[1m")
+BFR="\\r\\033[K"
+TAB="  "
 CM="${GN}✓${CL}"
+VERIFYPW="${TAB}${TAB}${CL}"
 silent() { "$@" >/dev/null 2>&1; }
 set -e
 header_info
@@ -92,10 +98,9 @@ userid=$SUDO_USER
 install() {
     STD="silent"
     header_info
-    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
-    read -p "Do you VMware like a dumb corpo?  (y/N) " vmwareq
+    rebootMenu
+    vmwareMenu
     secondUser
-    header_info
     msg_info "Launching no touch in - 5"
     sleep 1
     msg_info "4"
@@ -106,6 +111,7 @@ install() {
     sleep 1
     msg_info "1"
     sleep 1
+    header_info
     msg_ok "Launched"
 
     signalRepo
@@ -119,8 +125,8 @@ install() {
     printInstall
     tmuxStuff
     case $vmwareq in
-            [nN]) msg_ok "Skipping VMware Workstation install. Linux KVM FTW!";;
-            *) vmwareSux;;
+            [yY]) vmwareSux;;
+            *) msg_ok "Skipping VMware Workstation install. Linux KVM FTW!";;
     esac
     allDone
 }
@@ -337,24 +343,62 @@ EOF
 }
 
 secondUser() {
-  read -p "Do you want to create another user? (y/N) " seconduser
+  OPTIONS=( N "No, just for me"\
+         Y "Create another user")
+
+  seconduser=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Another User Option" --menu "Do you want to create another user?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
   case $seconduser in
-    [yY]) read -p "Please enter their user name: " another
+    [yY]) another=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set UserID" 8 58 --title "Please enter their ID: " 3>&1 1>&2 2>&3)
+        passwordHandler
         msg_info "Creating $another user and shared vms folder in root along with vms group"
         grp="vms"
         ls / | grep -o "$grp" > /dev/null &&  msg_ok "folder $grp already created" || $STD sudo mkdir /$grp
         groups $userid | grep -o "$grp" > /dev/null &&  msg_ok "group $grp already created" || $STD sudo groupadd $grp && $STD sudo adduser $userid $grp
-        cat /etc/passwd | grep -o "$another" > /dev/null && msg_ok "$another already created..." && allDone || $STD sudo useradd -m -s /usr/bin/bash -G $grp $another
-        read -s -p "Please enter their password: " enterPasswordHere
-        enterhashhere=$(openssl passwd -1 "$enterPasswordHere")
+        cat /etc/passwd | grep -o "$another" > /dev/null && msg_ok "$another already created..." && return 0 || $STD sudo useradd -m -s /usr/bin/bash -G $grp $another
+        enterhashhere=$(openssl passwd -1 "$PW1")
         echo "$another:$enterhashhere" | chpasswd -e
-        enterhashhere="just a really fantastic password"
+        PW1="just a really fantastic password"
+        PW2="just a really fantastic password"
         sudo chown  root:vms /vms
         sudo chmod 2771 /vms
-      ;;
-    *) msg_ok "Skipping another user creation"
-      ;;
+        msg_ok "$another created";;
+    *) msg_ok "Skipping another user creation";;
 esac
+}
+
+passwordHandler() {
+    while true; do
+    if PW1=$(whiptail --backtitle "Ubuntu Post-Install Script" --passwordbox "\nSet Password for new $another" 9 58 --title "PASSWORD (leave blank for automatic login)" 3>&1 1>&2 2>&3); then
+      if [[ ! -z "$PW1" ]]; then
+        if [[ "$PW1" == *" "* ]]; then
+          whiptail --msgbox "Password cannot contain spaces. Please try again." 8 58
+        elif [ ${#PW1} -lt 5 ]; then
+          whiptail --msgbox "Password must be at least 5 characters long. Please try again." 8 58
+        else
+          if PW2=$(whiptail --backtitle "Ubuntu Post-Install Script" --passwordbox "\nVerify $another's Password" 9 58 --title "PASSWORD VERIFICATION" 3>&1 1>&2 2>&3); then
+            if [[ "$PW1" == "$PW2" ]]; then
+              PW="-password $PW1"
+              echo $PW1
+              echo -e "${VERIFYPW}${BOLD}${DGN}$another Password: ${BGN}********${CL}"
+              break
+            else
+              whiptail --msgbox "Passwords do not match. Please try again." 8 58
+            fi
+          else
+            exit_script
+          fi
+        fi
+      else
+        PW1="Automatic Login"
+        PW=""
+        echo -e "${VERIFYPW}${BOLD}${DGN}Root Password: ${BGN}$PW1${CL}"
+        break
+      fi
+    else
+      exit_script
+    fi
+  done
 }
 
 vmwareSux() {
@@ -383,6 +427,30 @@ vmwareSux() {
     msg_info "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues" && echo -e "\n"
 }
 
+rebootMenu() {
+  OPTIONS=( N "No auto reboot"\
+         Y "Auto reboot at end of script")
+
+  rebootq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Reboot Option" --menu "Would you like to reboot at the end of this script?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+vmwareMenu() {
+  OPTIONS=( N "No, KVM FTW"\
+         Y "I'm a big dumb corpo who loves VMware")
+
+  vmwareq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "VMware Install Option" --menu "Do you VMware like a dumb corpo?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+verboseMenu() {
+  OPTIONS=( N "No"\
+         Y "Yes! I want all the lines!!!")
+
+  prompt=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Verbose Option" --menu "Would you like to run in verbose mode?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
 allDone() {
   msg_ok "Ok, I think we're done!\n"
   case $rebootq in 
@@ -400,7 +468,7 @@ allDone() {
 
 custom() {
   header_info
-  read -r -p "Verbose mode? <y/N> " prompt
+  verboseMenu
   if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
   STD=""
   else
@@ -408,14 +476,14 @@ custom() {
   fi
   header_info
 
-    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
+    rebootMenu
+    vmwareMenu
+    secondUser
     read -p "Do you want to install Google Chrome? (Y/n) " chromeq
     read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
-    read -p "Do you VMware like a dumb corpo?  (y/N) " vmwareq
     read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
     read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
     read -p "Do you want to enable fingerprint in terminal?  (Y/n) " printq
-    secondUser
     signalRepo
     fastFetchRepo
     letsUpdate
