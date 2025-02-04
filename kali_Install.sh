@@ -135,7 +135,7 @@ case $keyq in
                     *) echo "Invalid response";;
                 esac
             fi;;
-    * ) echo "Skipping Rolling Keys";;
+    * ) msg_ok "Skipping Rolling Keys";;
 esac
 }
 
