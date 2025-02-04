@@ -34,8 +34,13 @@ YW=$(echo "\033[33m")
 BL=$(echo "\033[36m")
 RD=$(echo "\033[01;31m")
 GN=$(echo "\033[1;92m")
+BGN=$(echo "\033[4;92m")
+DGN=$(echo "\033[32m")
 BFR="\\r\\033[K"
 HOLD="-"
+BOLD=$(echo "\033[1m")
+BFR="\\r\\033[K"
+TAB="  "
 CM="${GN}✓${CL}"
 silent() { "$@" >/dev/null 2>&1; }
 set -e
@@ -72,7 +77,7 @@ fi
 install() {
     STD="silent"
     header_info
-    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
+    rebootMenu
     header_info
     msg_info "Launching no touch in - 5"
     sleep 1
@@ -130,7 +135,7 @@ case $keyq in
                     *) echo "Invalid response";;
                 esac
             fi;;
-    * ) echo "Probably fine";;
+    * ) echo "Skipping Rolling Keys";;
 esac
 }
 
@@ -316,6 +321,70 @@ lynisrun() {
     sudo netstat -tulpn > /home/$userid/open_ports_log.txt
 }
 
+rebootMenu() {
+  OPTIONS=( N "No auto reboot"\
+         Y "Auto reboot at end of script")
+
+  rebootq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Reboot Option" --menu "Would you like to reboot at the end of this script?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+verboseMenu() {
+  OPTIONS=( N "No"\
+         Y "Yes! I want all the lines!!!")
+
+  prompt=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Verbose Option" --menu "Would you like to run in verbose mode?" 10 58 2 \
+          "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+nvidiaMenu() {
+  OPTIONS=( n "No, skip Nvidia/CUDA" \
+            y "Yes, install Nvidia/CUDA for Hashcat")
+
+  nvidiaq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Nvidia/CUDA Install" --menu "Do you want to install Nvidia/CUDA for Hashcat?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+lynisMenu() {
+  OPTIONS=( n "No, skip Lynis" \
+            y "Yes, run Lynis")
+
+  lynisq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Lynis Scan" --menu "Do you want to run Lynis?" 10 58 2 \
+           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+chromeMenu() {
+  OPTIONS=( n "No, skip Chrome" \
+            Y "Yes, install Chrome")
+
+  chromeq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Google Chrome Install" --menu "Do you want to install Google Chrome?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+xrdpMenu() {
+  OPTIONS=( n "No, skip xrdp" \
+            Y "Yes, install and configure xrdp")
+
+  xrdpq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "xrdp Install" --menu "Will you be using xrdp?" 10 58 2 \
+           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+randomizeMenu() {
+  OPTIONS=( n "No, keep current name" \
+            Y "Yes, randomize machine name")
+
+  randoq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Machine Name Randomization" --menu "Do you want to randomize the machine name?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
+keyMenu() {
+  OPTIONS=( n "No, skip key rolling" \
+            y "Yes, roll keys")
+
+  keyq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Key Rolling" --menu "Do you want to roll keys?" 10 58 2 \
+           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
 allDone() {
   msg_ok "Ok, I think we're done!\n"
   case $rebootq in 
@@ -333,25 +402,29 @@ allDone() {
 
 custom() {
     header_info
-    read -r -p "Verbose mode? <y/N> " prompt
+    verboseMenu
     if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
     STD=""
     else
     STD="silent"
     fi
-    header_info
-    read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
-    read -p "Do you want some Nvidia? This installs cuda for Hashcat. (y/N) " nvidiaq
-    read -p "Do you want to run lynis? (y/N) " lynisq
-    read -p "Do you want to install Google Chrome? (Y/n) " chromeq
-    read -p "Will you be using xrdp? (Y/n) " xrdpq
-    read -p "Do you want to randomize the machine name? (Y/n) " randoq
-    read -p "Do you want to roll keys? (y/N) " keyq
+    rebootMenu
+    nvidiaMenu
+    lynisMenu
+    chromeMenu
+    xrdpMenu
+    randomizeMenu
+    keyMenu
 
+    header_info
     rollKeys
     mscode
     letsUpdate
     apps
+        case $randoq in
+                [nN]) msg_ok "Skipping machine rename";;
+                *) rando;;
+        esac
         case $chromeq in
                 [nN]) msg_ok "Skipping Google Chrome install";;
                 *) chromeInstall;;
@@ -365,10 +438,6 @@ custom() {
                 *) xrdpInstall;;
         esac
     tmuxStuff
-        case $randoq in
-                [nN]) msg_ok "Skipping machine rename";;
-                *) rando;;
-        esac
         case $lynisq in
                 [yY]) lynisrun;;
                 *) msg_ok "Skipping lynis run";;
@@ -379,7 +448,7 @@ custom() {
 OPTIONS=(Full "Install (Apps etc, does not roll keys)" \
          Custom "Install, lotsa options")
 
-CHOICE=$(whiptail --backtitle "Kali Post-Install Script" --title "Install Packages" --menu "Select an option:" 10 58 2 \
+CHOICE=$(whiptail --backtitle "Ubuntu Helper Scripts" --title "Install Packages" --menu "Select an option:" 10 58 2 \
           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
 
 case $CHOICE in
