@@ -36,6 +36,7 @@ RD=$(echo "\033[01;31m")
 GN=$(echo "\033[1;92m")
 BGN=$(echo "\033[4;92m")
 DGN=$(echo "\033[32m")
+noticeid="${TAB}${TAB}${CL}"
 BFR="\\r\\033[K"
 HOLD="-"
 BOLD=$(echo "\033[1m")
@@ -54,6 +55,11 @@ function msg_info() {
 function msg_ok() {
   local msg="$1"
   echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
+}
+
+msg_notice() {
+  local msg="$1"
+  echo -e "${BFR}${noticeid}${RD}${msg}${CL}"
 }
 
 set -eu -o pipefail # fail on error and report it, debug all lines
@@ -311,7 +317,7 @@ rando() {
     $STD sudo sed -i "s/$old/$stubsthename/g" /etc/hosts  # Use \< and \> for word boundaries
     $STD sudo sed -i "s/$old/$stubsthename/g" /etc/hostname # Use \< and \> for word boundaries
     $STD sudo hostname "$stubsthename"
-    msg_ok "Renamed $old to $stubsthename"
+    msg_notice " Renamed $old to $stubsthename"
     #$STD sudo systemctl restart networking
 }
 
@@ -322,16 +328,16 @@ lynisrun() {
 }
 
 rebootMenu() {
-  OPTIONS=( N "No auto reboot"\
-         Y "Auto reboot at end of script")
+  OPTIONS=( n "No auto reboot"\
+         y "Auto reboot at end of script")
 
   rebootq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Reboot Option" --menu "Would you like to reboot at the end of this script?" 10 58 2 \
           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
 }
 
 verboseMenu() {
-  OPTIONS=( N "No"\
-         Y "Yes! I want all the lines!!!")
+  OPTIONS=( n "No"\
+         y "Yes! I want all the lines!!!")
 
   prompt=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Verbose Option" --menu "Would you like to run in verbose mode?" 10 58 2 \
           "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
