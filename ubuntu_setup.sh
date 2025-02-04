@@ -93,6 +93,7 @@ install() {
     STD="silent"
     header_info
     read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
+    read -p "Do you VMware like a dumb corpo?  (y/N) " vmwareq
     secondUser
     header_info
     msg_info "Launching no touch in - 5"
@@ -117,6 +118,10 @@ install() {
     nvidiaInstall
     printInstall
     tmuxStuff
+    case $vmwareq in
+            [nN]) msg_ok "Skipping VMware Workstation install. Linux KVM FTW!";;
+            *) vmwareSux;;
+    esac
     allDone
 }
 
@@ -352,6 +357,32 @@ secondUser() {
 esac
 }
 
+vmwareSux() {
+    vmwaredefault="https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/linux/core/VMware-Workstation-17.6.2-24409262.x86_64.bundle.tar"
+    vmwareopt=$(echo $vmwaredefault | grep -oE "VMware-Workstation.*$")
+    msg_info "Check here for latest version: https://softwareupdate.vmware.com/cds/vmw-desktop/ws/" && echo -e "\n" 
+    read -p "Enter the FULL download url for the version you'd like ($vmwareopt) " vmwareDL 
+    echo -e "\n" 
+    vmwareLink=${vmwareDL:-$vmwaredefault}
+    vmwareFile=$(echo $vmwareLink | grep -oE "VMware-Workstation.*$")
+    vmwareBundle=$(echo $vmwareFile | grep -oE "VMware-Work.*\.bundle")
+    msg_info "downloading $vmwareFile" && echo -e "\n" 
+    vmwareV=$(echo $vmwareFile | sed 's|VMware-Workstation-|VMware Workstation |g' | sed 's|.x86_64.bundle.tar||g' | sed 's|-| build-|g')
+    test -f /home/$userid/Downloads/$vmwareFile&&msg_info "VMware already downloaded" && echo -e "\n" || wget -q $vmwareLink -P /home/$userid/Downloads && msg_info "unzipping $vmwareFile" && echo -e "\n" && $STD sudo tar -xvf /home/$userid/Downloads/$vmwareFile -C /home/$userid/Downloads/ && $STD sudo chmod +x $vmwareBundle && $STD sudo chown $userid:$userid /home/$userid/Downloads/*
+      #echo getting fixes
+      #test -f /home/$userid/Downloads/workstation-$vmwareFIXversion.tar.gz&&echo 'VMware fix already downloaded' || wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz -P /home/$userid/Downloads
+      #cd /home/$userid/Downloads
+      #tar -xzf workstation-$vmwareFIXversion.tar.gz;
+      #cd vmware-host-modules-workstation-$vmwareFIXversion;
+      #tar -cf vmmon.tar vmmon-only;
+      #tar -cf vmnet.tar vmnet-only;
+    vc="vmware"
+    which "$vc" | grep -o "$vc" > /dev/null &&  msg_ok "$vc already installed" && echo -e "\n" || msg_info "Installing $vmwareBundle" && echo -e "\n" && sudo bash /home/$userid/Downloads/$vmwareBundle --eulas-agreed --console --required && msg_ok "$vmwareV installed" && echo -e "\n"
+      #cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/;
+      #sudo vmware-modconfig --console --install-all;
+    msg_info "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues" && echo -e "\n"
+}
+
 allDone() {
   msg_ok "Ok, I think we're done!\n"
   case $rebootq in 
@@ -380,6 +411,7 @@ custom() {
     read -p "Would you like to reboot at the end of this script?  (y/N) " rebootq
     read -p "Do you want to install Google Chrome? (Y/n) " chromeq
     read -p "Do you want to enable pcie passthrough? (Y/n) " kvmq
+    read -p "Do you VMware like a dumb corpo?  (y/N) " vmwareq
     read -p "Do you want some Nvidia? This installs cuda for Hashcat. (Y/n) " nvidiaq
     read -p "Do you want to install Flathub goodies?  (Y/n) " flatq
     read -p "Do you want to enable fingerprint in terminal?  (Y/n) " printq
@@ -395,6 +427,10 @@ custom() {
         case $kvmq in
                 [nN]) msg_ok "Skipping pcie passthrough";;
                 *) lxcInstall;;
+        esac
+        case $vmwareq in
+                [nN]) msg_ok "Skipping VMware Workstation install. Linux KVM FTW!";;
+                *) vmwareSux;;
         esac
         case $nvidiaq in
                 [nN]) msg_ok "Skipping Nvidia install";;
