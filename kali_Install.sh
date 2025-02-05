@@ -432,8 +432,8 @@ custom() {
                 *) chromeInstall;;
         esac
         case $nvidiaq in
-                [yY]) nvidiaInstal;;
-                *) msg_ok "Skipping Nvidia install"l;;
+                [yY]) nvidiaInstall;;
+                *) msg_ok "Skipping Nvidia install";;
         esac
         case $xrdpq in
                 [nN]) msg_ok "Skipping xrdp install";;
