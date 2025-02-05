@@ -369,7 +369,7 @@ esac
 
 passwordHandler() {
     while true; do
-    if PW1=$(whiptail --backtitle "Ubuntu Post-Install Script" --passwordbox "\nSet Password for new $another" 9 58 --title "PASSWORD (leave blank for automatic login)" 3>&1 1>&2 2>&3); then
+    if PW1=$(whiptail --backtitle "Ubuntu Post-Install Script" --passwordbox "\nSet Password for $another" 9 58 --title "PASSWORD (leave blank for automatic login)" 3>&1 1>&2 2>&3); then
       if [[ ! -z "$PW1" ]]; then
         if [[ "$PW1" == *" "* ]]; then
           whiptail --msgbox "Password cannot contain spaces. Please try again." 8 58
