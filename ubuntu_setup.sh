@@ -119,7 +119,7 @@ install() {
     letsUpdate
     apps
     flatHub
-    flathubTheme
+#    flathubTheme
     chromeInstall
     lxcInstall
     nvidiaInstall
@@ -609,7 +609,7 @@ fingerprintMenu() {
 }
 
 flathubThemeMenu() {
-  OPTIONS=( N "No, skip and keep flathub apps as is" \
+  OPTIONS=( N "No, skip. Not sure this is even necessary" \
             Y "Yes, Try and match theme across flathub apps")
 
   flathubThemeq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Match Flathub apps Theme" --menu "Do you want to match user theme across flathub apps?" 10 58 2 \
@@ -648,10 +648,10 @@ custom() {
     kvmMenu
     nvidiaMenu
     flatMenu
-        case $flatq in
-                [nN]) ;;
-                *) flathubThemeq;;
-        esac
+    case $flatq in
+            [nN]) ;;
+            *) flathubThemeq;;
+    esac
     fingerprintMenu
     signalRepo
     fastFetchRepo
