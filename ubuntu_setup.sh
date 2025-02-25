@@ -279,7 +279,8 @@ gnomeExtFail() {
 }
 
 flathubTheme() {
-    msg_info "Updating flathub Themes"
+  theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
+    msg_info "Updating flathub to Theme $theme"
   die() {
     echo "$@" >&2
     exit 1
@@ -298,7 +299,7 @@ flathubTheme() {
     [[ -e "$stylepak_cache" ]] && rm -rf "$old_cache" || mv "$old_cache" "$stylepak_cache"
   fi
 
-  theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
+
   app_id=org.gtk.Gtk3theme.$theme
   for location in "$data_home/themes" "$HOME/.themes" /usr/share/themes; do
     if [[ -d "$location/$theme" ]]; then
@@ -387,7 +388,7 @@ EOF
        $STD flatpak install -y --$install_target "$bundle"
     fi
   done
-msg_ok "Flathub Themes updated"
+msg_ok "Flathub Themes updated to $theme"
 }
 
 nvidiaInstall() {
