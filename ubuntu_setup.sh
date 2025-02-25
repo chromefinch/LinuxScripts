@@ -224,6 +224,7 @@ flatHub() {
         org.onlyoffice.desktopeditors
         com.github.tchx84.Flatseal
         org.keepassxc.KeePassXC
+        io.github.peazip.PeaZip
 EOF
 )
 }
