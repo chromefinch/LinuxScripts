@@ -450,7 +450,7 @@ tmuxStuff() {
   else
     cat << EOF >> /home/$userid/$term
 fastfetch
-alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh"
+alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh && sudo flatpak update"
 #alreadydoneflag
 EOF
     sudo chown $userid:$userid /home/$userid/$term
