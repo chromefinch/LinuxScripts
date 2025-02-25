@@ -200,7 +200,8 @@ apps() {
     net-tools
     gnome-shell-extension-manager
     sysvinit-utils
-    wireshark
+    ostree
+    appstream-util
     rename
 EOF
 )
@@ -225,6 +226,7 @@ flatHub() {
         com.github.tchx84.Flatseal
         org.keepassxc.KeePassXC
         io.github.peazip.PeaZip
+        org.wireshark.Wireshark
 EOF
 )
 }
