@@ -279,6 +279,7 @@ gnomeExtFail() {
 }
 
 flathubTheme() {
+    msg_info "Updating flathub Themes"
   die() {
     echo "$@" >&2
     exit 1
@@ -298,11 +299,9 @@ flathubTheme() {
   fi
 
   theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
-  echo "Converting theme: $theme"
   app_id=org.gtk.Gtk3theme.$theme
   for location in "$data_home/themes" "$HOME/.themes" /usr/share/themes; do
     if [[ -d "$location/$theme" ]]; then
-      echo "Found theme located at: $location/$theme"
       theme_path="$location/$theme"
       break
     fi
@@ -342,12 +341,12 @@ cat >"$build_dir/files/share/appdata/$app_id.appdata.xml" <<EOF
 </component>
 EOF
 
-  appstream-compose \
+  $STD appstream-compose \
     --prefix="$build_dir/files" \
     --basename="$app_id" \
     --origin=flatpak "$app_id"
 
-  ostree --repo="$repo_dir" commit -b base --tree=dir="$build_dir"
+  $STD ostree --repo="$repo_dir" commit -b base --tree=dir="$build_dir"
 
   bundles=()
 
@@ -355,7 +354,7 @@ EOF
     bundle="$root_dir/$app_id-$arch.flatpak"
 
     rm -rf "$build_dir"
-    ostree --repo="$repo_dir" checkout -U base "$build_dir"
+    $STD ostree --repo="$repo_dir" checkout -U base "$build_dir"
 
   read -rd '' metadata <<EOF ||:
 [Runtime]
@@ -366,12 +365,12 @@ EOF
     # Make sure there is no trailing newline, so xa.metadata doesn't get confused later
     echo -n "$metadata" > "$build_dir/metadata"
 
-    ostree --repo="$repo_dir" commit \
+     $STD ostree --repo="$repo_dir" commit \
       -b "runtime/$app_id/$arch/$GTK_THEME_VER" \
       --add-metadata-string "xa.metadata=$(cat $build_dir/metadata)" \
       --link-checkout-speedup \
       "$build_dir"
-    flatpak build-bundle --runtime --arch="$arch" \
+     $STD flatpak build-bundle --runtime --arch="$arch" \
       "$repo_dir" "$bundle" "$app_id" "$GTK_THEME_VER"
 
     trap 'rm "$bundle"' EXIT
@@ -383,11 +382,12 @@ EOF
 
   for bundle in "${bundles[@]}"; do
     if [ "$install_target" == "system" ]; then
-      sudo flatpak install -y --$install_target "$bundle"
+       $STD sudo flatpak install -y --$install_target "$bundle"
     else
-      flatpak install -y --$install_target "$bundle"
+       $STD flatpak install -y --$install_target "$bundle"
     fi
   done
+msg_ok "Flathub Themes updated"
 }
 
 nvidiaInstall() {
