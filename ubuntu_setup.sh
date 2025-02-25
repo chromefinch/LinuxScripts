@@ -119,6 +119,7 @@ install() {
     letsUpdate
     apps
     flatHub
+    flathubTheme
     chromeInstall
     lxcInstall
     nvidiaInstall
@@ -494,6 +495,14 @@ fingerprintMenu() {
             "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
 }
 
+flathubThemeMenu() {
+  OPTIONS=( N "No, skip and keep flathub apps as is" \
+            Y "Yes, Try and match theme across flathub apps")
+
+  flathubThemeq=$(whiptail --backtitle "Ubuntu Post-Install Script" --title "Match Flathub apps Theme" --menu "Do you want to match user theme across flathub apps?" 10 58 2 \
+            "${OPTIONS[@]}" 3>&1 1>&2 2>&3)
+}
+
 flathubTheme() {
   die() {
     echo "$@" >&2
@@ -503,6 +512,8 @@ flathubTheme() {
   data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
   stylepak_cache="$cache_home/stylepak"
   repo_dir="$stylepak_cache/repo"
+  install_target=user
+  GTK_THEME_VER=3.22
 
   old_cache="$cache_home/pakitheme"
   if [[ -e "$old_cache" ]]; then
@@ -636,6 +647,10 @@ custom() {
     kvmMenu
     nvidiaMenu
     flatMenu
+        case $flatq in
+                [nN]) ;;
+                *) flathubThemeq;;
+        esac
     fingerprintMenu
     signalRepo
     fastFetchRepo
@@ -658,6 +673,10 @@ custom() {
                 *) nvidiaInstall;;
         esac
         case $flatq in
+                [nN]) msg_ok "Skipping Flathub goodies install";;
+                *) flatHub;;
+        esac
+        case $flathubThemeq in
                 [nN]) msg_ok "Skipping Flathub goodies install";;
                 *) flatHub;;
         esac
