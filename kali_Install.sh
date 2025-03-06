@@ -249,7 +249,7 @@ tmuxStuff() {
   else
     cat << EOF >> /home/$userid/$term
 fastfetch
-alias update="sudo apt update && sudo apt upgrade -y && sudo searchsploit -u"
+alias update="sudo apt update && sudo apt upgrade -y && sudo flatpak update && sudo searchsploit -u"
 alias netrset="sudo service networking restart && ip -br a"
 #alreadydoneflag
 EOF
