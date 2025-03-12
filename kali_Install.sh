@@ -213,7 +213,7 @@ EOF
 #$STD sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
 }
 
-mscode(){
+mscode() {
     msg_info "Adding Microsoft Visual Studio Code repo"
     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor > packages.microsoft.gpg
     $STD sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
