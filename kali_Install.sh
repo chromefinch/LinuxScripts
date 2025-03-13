@@ -194,6 +194,7 @@ apps() {
     sysvinit-utils
     gnome-shell-extension-manager
     gobuster
+    gospider
     hakrawler
     lynis
     net-tools
