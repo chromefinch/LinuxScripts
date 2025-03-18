@@ -648,10 +648,10 @@ custom() {
     kvmMenu
     nvidiaMenu
     flatMenu
-    case $flatq in
-            [nN]) ;;
-            *) flathubThemeq;;
-    esac
+#    case $flatq in
+#            [nN]) ;;
+#            *) flathubThemeq;;
+#    esac
     fingerprintMenu
     signalRepo
     fastFetchRepo
@@ -677,10 +677,10 @@ custom() {
                 [nN]) msg_ok "Skipping Flathub goodies install";;
                 *) flatHub;;
         esac
-        case $flathubThemeq in
-                [nN]) msg_ok "Skipping Flathub goodies install";;
-                *) flatHub;;
-        esac
+#        case $flathubThemeq in
+#                [nN]) msg_ok "Skipping Flathub goodies install";;
+#                *) flatHub;;
+#        esac
         case $printq in
                 [nN]) msg_ok "Skipping fingerprint in terminal";;
                 *) printInstall;;
