@@ -37,6 +37,13 @@ or
 -ExecutionPolicy Bypass -File "C:\Path\To\Your\DeleteOldestBackup.ps1" -backupPath "C:\YourBackupPath" -KeepCount 3
 OK: Click "OK" to save the changes.
 
+<Actions Context="Author">
+    <Exec>
+      <Command>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Command>
+      <Arguments>-NoProfile -ExecutionPolicy Bypass -File "C:\Path\To\Your\Prune-AOMEIBackups.ps1" -BackupParentPath "B:\YourBackupPath\System Backup" -KeepCount 3</Arguments>
+    </Exec>
+</Actions>
+
 .NOTES
 - Requires PowerShell 3.0 or later.
 - Run with sufficient permissions to delete files/folders in the target path.
