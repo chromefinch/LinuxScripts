@@ -26,6 +26,17 @@ Deletes all but the 5 newest backup files found directly inside "E:\Backups\Syst
 .\Prune-AOMEIBackups.ps1 -BackupParentPath "C:\MyAOMEIBackups"
 Deletes all but the 3 (default) newest backup files found directly inside "C:\MyAOMEIBackups".
 
+.Schedule
+How to Use with Task Scheduler:
+Save the script: Save the updated code as a .ps1 file (e.g., DeleteOldestBackup.ps1).
+Open Task Scheduler: Search for "Task Scheduler" in the Start Menu and open it.
+Edit the existing task (or create a new one): Find the task you created earlier. Right-click on it and select "Properties". Go to the "Actions" tab, select the existing action, and click "Edit...".
+Add arguments (optional): In the "Add arguments (optional)" field, update the arguments to include the -KeepCount parameter. Replace "C:\YourBackupPath" with your actual backup path and 2 (or 3) with the desired number of backups to keep:
+-ExecutionPolicy Bypass -File "C:\Path\To\Your\DeleteOldestBackup.ps1" -backupPath "C:\YourBackupPath" -KeepCount 2
+or
+-ExecutionPolicy Bypass -File "C:\Path\To\Your\DeleteOldestBackup.ps1" -backupPath "C:\YourBackupPath" -KeepCount 3
+OK: Click "OK" to save the changes.
+
 .NOTES
 - Requires PowerShell 3.0 or later.
 - Run with sufficient permissions to delete files/folders in the target path.
