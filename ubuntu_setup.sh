@@ -452,6 +452,7 @@ tmuxStuff() {
     cat << EOF >> /home/$userid/$term
 fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo snap refresh && sudo flatpak update"
+#alias cpu='watch '\''cat /proc/cpuinfo | grep "cpu MH"'\'''
 #alreadydoneflag
 EOF
     sudo chown $userid:$userid /home/$userid/$term
