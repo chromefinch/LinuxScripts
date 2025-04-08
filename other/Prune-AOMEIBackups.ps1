@@ -62,7 +62,7 @@ Write-Host "Configured to keep the $KeepCount most recent backup(s)."
 
 # Get all subdirectories, sort by CreationTime (Oldest First)
 try {
-    $BackupFolders = Get-ChildItem -Path $BackupParentPath -Directory -ErrorAction Stop | Sort-Object CreationTime
+    $BackupFolders = Get-ChildItem -Path $BackupParentPath -Filter "*.adi" -ErrorAction Stop | Sort-Object CreationTime 
 }
 catch {
     Write-Error "Error accessing or listing directories in '$BackupParentPath'. Check permissions. Error: $($_.Exception.Message)"
@@ -81,7 +81,7 @@ if ($TotalCount -le $KeepCount) {
 
 # Calculate how many folders to delete
 $ToDeleteCount = $TotalCount - $KeepCount
-Write-Host "Need to delete $ToDeleteCount oldest backup folder(s)."
+Write-Host "Need to delete $ToDeleteCount oldest backup files(s)."
 
 # Select the oldest folders to delete
 $FoldersToDelete = $BackupFolders | Select-Object -First $ToDeleteCount
@@ -91,12 +91,12 @@ Write-Host "Starting deletion process..."
 
 foreach ($Folder in $FoldersToDelete) {
     $FolderPath = $Folder.FullName
-    Write-Host "Attempting to delete folder (Created: $($Folder.CreationTime)): '$FolderPath'"
+    Write-Host "Attempting to delete file (Created: $($Folder.CreationTime)): '$FolderPath'"
 
     # Use -WhatIf to preview or $PSCmdlet.ShouldProcess for actual deletion
-    if ($PSCmdlet.ShouldProcess($FolderPath, "Delete Backup Folder")) {
+    if ($PSCmdlet.ShouldProcess($FolderPath, "Delete Backup File")) {
         try {
-            Remove-Item -Path $FolderPath -Recurse -Force -ErrorAction Stop
+            Remove-Item -Path $FolderPath -Force -ErrorAction Stop
             Write-Host "Successfully deleted: '$FolderPath'"
         }
         catch {
