@@ -252,7 +252,7 @@ tmuxStuff() {
 fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo flatpak update && sudo searchsploit -u"
 alias netrset="sudo service networking restart && ip -br a"
-#alias cpu='watch '\''cat /proc/cpuinfo | grep "cpu MH"'\'''
+alias cpu='watch -n 1 "cat /proc/cpuinfo | grep \"cpu MHz\" | awk '\''{printf \"%.2f GHz\\n\", \$NF/1000}'\'' " '
 #alreadydoneflag
 EOF
     sudo chown $userid:$userid /home/$userid/$term
