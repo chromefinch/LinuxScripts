@@ -26,7 +26,7 @@ Deletes all but the 5 newest backup files found directly inside "E:\Backups\Syst
 .\Prune-AOMEIBackups.ps1 -BackupParentPath "C:\MyAOMEIBackups"
 Deletes all but the 3 (default) newest backup files found directly inside "C:\MyAOMEIBackups".
 
-.Schedule
+.SCHEDULE
 How to Use with Task Scheduler:
 Save the script: Save the updated code as a .ps1 file (e.g., DeleteOldestBackup.ps1).
 Open Task Scheduler: Search for "Task Scheduler" in the Start Menu and open it.
