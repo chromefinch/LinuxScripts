@@ -52,7 +52,7 @@ OK: Click "OK" to save the changes.
 - Assumes AOMEI creates separate subfolders for backup versions/instances.
 - The script uses file CreationTime for sorting.
 - Version: 1.1
-- Author: AI Assistant
+- Author: AI Assistant... with a lot of help. But you did great AI Assistant, keep it up. 
 #>
 [CmdletBinding(SupportsShouldProcess = $true)] # Enables -WhatIf confirmation
 param(
