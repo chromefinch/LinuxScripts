@@ -42,7 +42,7 @@ print_yellow "--- Using Host List: ${HOST_LIST_FILE} ---"
 
 # --- Phase 1: Discovery (SYN Scan, Top 1000, No Ping) ---
 print_blue "[+] Phase 1: Discovery Scan (Top 1000 Ports, No Ping)"
-nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn \
+nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn -n \
      -iL "${HOST_LIST_FILE}" \
      --top-ports 1000 \
      -oA "${SCAN_TITLE}_phase1_Top1kPorts"
@@ -51,7 +51,7 @@ nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn \
 # Note: Phase 1 already performs discovery via SYN packets.
 # This phase performs an ICMP/ARP based discovery on the original list.
 print_blue "[+] Phase 2: Ping Sweep on original list"
-nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m \
+nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -n \
      -iL "${HOST_LIST_FILE}" \
      -oA "${SCAN_TITLE}_phase2_PingSweep"
 
@@ -72,7 +72,7 @@ print_green "[+] Live hosts saved to ${SCAN_TITLE}_live_hosts.txt"
 # --- Phase 3: Discover all ports ---
 print_blue "[+] Phase 3: Scan All Ports on Live Hosts"
 if [[ -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
-    nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn \
+    nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn -n \
          -iL "${SCAN_TITLE}_live_hosts.txt" \
          -p- \
          -oA "${SCAN_TITLE}_phase3_Top1k_Live"
