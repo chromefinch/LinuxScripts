@@ -38,7 +38,7 @@ if [[ ! -f "$HOST_LIST_FILE" ]]; then
   print_red "Error: Host list file '$HOST_LIST_FILE' not found."
   exit 1
 fi
-
+clear
 print_yellow "--- Starting Scan: ${SCAN_TITLE} ---"
 print_yellow "--- Using Host List: ${HOST_LIST_FILE} ---"
 
