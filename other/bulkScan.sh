@@ -26,6 +26,7 @@ fi
 # --- User Input ---
 read -p "Enter a unique scan title (e.g., ProjectX_Q1_Scan): " SCAN_TITLE
 read -p "Enter the path to the host list file: " HOST_LIST_FILE
+read -p "Enter a port to exclude: " ignore
 
 # --- Input Validation ---
 if [[ -z "$SCAN_TITLE" ]]; then
@@ -58,7 +59,7 @@ nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -n \
 # --- Extract Live Hosts (Primarily from Phase 1 SYN Scan) ---
 print_blue "[+] Extracting Live Hosts found in Phases 1 & 2"
 # Using .nmap output; consider using .gnmap 'Status: Up' for potentially more reliable parsing
-grep -E "Ports: [0-9]+" "${SCAN_TITLE}_phase1_TopXPorts.gnmap" | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
+grep -E "Ports: [0-9]+" "${SCAN_TITLE}_phase1_TopXPorts.gnmap" | grep open | awk '!/$ignore/' | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
 # Optional: Add hosts found *only* by Phase 2 ping sweep if needed
 grep "Host: " "${SCAN_TITLE}_phase2_PingSweep.gnmap" | awk '{print $2}' >> "${SCAN_TITLE}_live_hosts.txt"
 sort -u "${SCAN_TITLE}_live_hosts.txt" -o "${SCAN_TITLE}_live_hosts.txt" # Keep unique if merging
@@ -80,7 +81,7 @@ else
     print_red "[!] Skipping Phase 3: No live hosts found in ${SCAN_TITLE}_live_hosts.txt."
 fi
 
-# --- Extract Open Ports (From Phase 1 Scan Results) ---
+# --- Extract Open Ports (From Phase 3 Scan Results) ---
 print_blue "[+] Extracting Open Ports discovered in Phase 3"
 # grep "^[0-9]\+\/.*state open" "${SCAN_TITLE}_phase3_Top1k_Live.gnmap" | awk -F '/' '{print $1}' | sort -nu > "${SCAN_TITLE}_open_ports.txt"
 # Alternative using .gnmap (often more reliable):
