@@ -40,12 +40,12 @@ fi
 print_yellow "--- Starting Scan: ${SCAN_TITLE} ---"
 print_yellow "--- Using Host List: ${HOST_LIST_FILE} ---"
 
-# --- Phase 1: Discovery (SYN Scan, Top 1000, No Ping) ---
-print_blue "[+] Phase 1: Discovery Scan (Top 1000 Ports, No Ping)"
+# --- Phase 1: Discovery (SYN Scan, Top 100, No Ping) ---
+print_blue "[+] Phase 1: Discovery Scan (Top 100 Ports, No Ping)"
 nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -Pn -n \
      -iL "${HOST_LIST_FILE}" \
-     --top-ports 1000 \
-     -oA "${SCAN_TITLE}_phase1_Top1kPorts"
+     --top-ports 100 \
+     -oA "${SCAN_TITLE}_phase1_TopXPorts"
 
 # --- Phase 2: Ping Sweep (Optional - Run against original list) ---
 # Note: Phase 1 already performs discovery via SYN packets.
@@ -58,7 +58,7 @@ nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -n \
 # --- Extract Live Hosts (Primarily from Phase 1 SYN Scan) ---
 print_blue "[+] Extracting Live Hosts found in Phases 1 & 2"
 # Using .nmap output; consider using .gnmap 'Status: Up' for potentially more reliable parsing
-grep "Host: " "${SCAN_TITLE}_phase1_Top1kPorts.gnmap" | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
+grep -E "Ports: [0-9]+" "${SCAN_TITLE}_phase1_TopXPorts.gnmap" | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
 # Optional: Add hosts found *only* by Phase 2 ping sweep if needed
 grep "Host: " "${SCAN_TITLE}_phase2_PingSweep.gnmap" | awk '{print $2}' >> "${SCAN_TITLE}_live_hosts.txt"
 sort -u "${SCAN_TITLE}_live_hosts.txt" -o "${SCAN_TITLE}_live_hosts.txt" # Keep unique if merging
@@ -84,7 +84,7 @@ fi
 print_blue "[+] Extracting Open Ports discovered in Phase 3"
 # grep "^[0-9]\+\/.*state open" "${SCAN_TITLE}_phase3_Top1k_Live.gnmap" | awk -F '/' '{print $1}' | sort -nu > "${SCAN_TITLE}_open_ports.txt"
 # Alternative using .gnmap (often more reliable):
-grep -oP '\d+/open' "${SCAN_TITLE}_phase1_Top1kPorts.gnmap" | cut -d '/' -f 1 | sort -nu > "${SCAN_TITLE}_open_ports.txt"
+grep -oP '\d+/open' "${SCAN_TITLE}_phase3_Top1k_Live.gnmap" | cut -d '/' -f 1 | sort -nu > "${SCAN_TITLE}_open_ports.txt"
 
 if [[ ! -s "${SCAN_TITLE}_open_ports.txt" ]]; then
     print_red "[!] Warning: No open ports found in Phase 1 scan results."
