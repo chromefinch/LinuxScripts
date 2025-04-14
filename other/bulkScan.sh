@@ -47,7 +47,7 @@ print_blue "[+] Phase 1: Discovery Scan (Top $topPorts Ports, No Ping)"
 nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m -Pn -n \
      -iL "${HOST_LIST_FILE}" \
      --top-ports $topPorts \
-     -oA "${SCAN_TITLE}_phase1_Top${$topPorts}Ports"
+     -oA "${SCAN_TITLE}_phase1_Top${topPorts}Ports"
 
 # --- Phase 2: Ping Sweep (Optional - Run against original list) ---
 # Note: Phase 1 already performs discovery via SYN packets.
@@ -60,7 +60,7 @@ nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -n \
 # --- Extract Live Hosts (Primarily from Phase 1 SYN Scan) ---
 print_blue "[+] Extracting Live Hosts found in Phases 1 & 2"
 # Using .nmap output; consider using .gnmap 'Status: Up' for potentially more reliable parsing
-grep -E "Ports: [0-9]+" "${SCAN_TITLE}_phase1_Top${$topPorts}Ports.gnmap" | grep open | awk '!/$ignore/' | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
+grep -E "Ports: [0-9]+" "${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap" | grep open | awk '!/$ignore/' | awk '{print $2}' > "${SCAN_TITLE}_live_hosts.txt"
 # Optional: Add hosts found *only* by Phase 2 ping sweep if needed
 grep "Host: " "${SCAN_TITLE}_phase2_PingSweep.gnmap" | awk '{print $2}' >> "${SCAN_TITLE}_live_hosts.txt"
 sort -u "${SCAN_TITLE}_live_hosts.txt" -o "${SCAN_TITLE}_live_hosts.txt" # Keep unique if merging
