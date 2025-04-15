@@ -78,7 +78,7 @@ fi
 phaseThree(){
 print_blue "[+] Phase 3: Scan All Ports on Live Hosts"
 if [[ -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
-    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 5m  --max-scan-delay 5 --min-rate 800 \
+    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 15m  --max-scan-delay 5 --min-rate 800 \
          -iL "${SCAN_TITLE}_live_hosts.txt" \
          $Phase3 \
          -oA "${SCAN_TITLE}_phase3_Port_Disco"
