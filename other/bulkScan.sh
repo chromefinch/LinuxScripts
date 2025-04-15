@@ -28,6 +28,10 @@ read -p "Enter a unique scan title (e.g., ProjectX_Q1_Scan): " SCAN_TITLE
 read -p "Enter the path to the host list file: " HOST_LIST_FILE
 read -p "Enter number of --top-ports: " topPorts
 read -p "Enter a port to exclude: " ignore
+Phase3default="-p-"
+echo "Phase 3 does a complete port discovery $Phase3default, you can overwrite that here (-p-/--top-ports X/skip) " 
+read -p "Skip will use results from Phase 2 : " Phase3Answer
+Phase3=${Phase3Answer:-$Phase3default}
 
 # --- Input Validation ---
 if [[ -z "$SCAN_TITLE" ]]; then
@@ -68,48 +72,102 @@ sort -u "${SCAN_TITLE}_live_hosts.txt" -o "${SCAN_TITLE}_live_hosts.txt" # Keep 
 if [[ ! -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
     print_red "[!] Warning: No live hosts found in Phase 1 based on grep pattern."
     # Consider exiting or modifying logic if no hosts are found
+else
+    print_green "[+] Live hosts saved to ${SCAN_TITLE}_live_hosts.txt"
 fi
-print_green "[+] Live hosts saved to ${SCAN_TITLE}_live_hosts.txt"
 
 # --- Phase 3: Discover all ports ---
+phaseThree(){
 print_blue "[+] Phase 3: Scan All Ports on Live Hosts"
 if [[ -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
-    nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m -Pn -n \
+    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 8m \
          -iL "${SCAN_TITLE}_live_hosts.txt" \
-         -p- \
-         -oA "${SCAN_TITLE}_phase3_Top1k_Live"
+         $Phase3 \
+         -oA "${SCAN_TITLE}_phase3_Port_Disco"
 else
     print_red "[!] Skipping Phase 3: No live hosts found in ${SCAN_TITLE}_live_hosts.txt."
 fi
+}
+
+case $Phase3 in
+    skip) print_blue "[+] using previously discovered ports from Phase 1"
+        cp ${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap ${SCAN_TITLE}_phase3_Port_Disco.gnmap
+        echo "Due to Phase 3 being skipped, this was copped from phase 1" >> ${SCAN_TITLE}_phase3_Port_Disco.gnmap ;;
+    *) phaseThree ;;
+esac
 
 # --- Extract Open Ports (From Phase 3 Scan Results) ---
 print_blue "[+] Extracting Open Ports discovered in Phase 3"
-# grep "^[0-9]\+\/.*state open" "${SCAN_TITLE}_phase3_Top1k_Live.gnmap" | awk -F '/' '{print $1}' | sort -nu > "${SCAN_TITLE}_open_ports.txt"
+# grep "^[0-9]\+\/.*state open" "${SCAN_TITLE}_phase3_Port_Disco.gnmap" | awk -F '/' '{print $1}' | sort -nu > "${SCAN_TITLE}_open_ports.txt"
 # Alternative using .gnmap (often more reliable):
-grep -oP '\d+/open' "${SCAN_TITLE}_phase3_Top1k_Live.gnmap" | cut -d '/' -f 1 | sort -nu > "${SCAN_TITLE}_open_ports.txt"
+grep -Eo "[0-9]+\/open" ${SCAN_TITLE}_phase3_Port_Disco.gnmap | grep -Eo "[0-9]+" | sort -nu | paste -sd',' > "${SCAN_TITLE}_open_ports.txt"
 
 if [[ ! -s "${SCAN_TITLE}_open_ports.txt" ]]; then
-    print_red "[!] Warning: No open ports found in Phase 1 scan results."
+    print_red "[!] Warning: No open ports found in Phase 3 scan results."
+else
+    print_green "[+] Open ports saved to ${SCAN_TITLE}_open_ports.txt"
 fi
-print_green "[+] Open ports saved to ${SCAN_TITLE}_open_ports.txt"
 
 # --- Phase 4: Deep Scan (Version/Script/OS) on Live Hosts & Found Ports ---
 print_blue "[+] Phase 4: Deep Scan on Live Hosts and Found Ports"
-if [[ -s "${SCAN_TITLE}_live_hosts.txt" && -s "${SCAN_TITLE}_open_ports.txt" ]]; then
-    # Format ports for nmap -p option (comma-separated, no whitespace)
-    PORTS=$(paste -sd, "${SCAN_TITLE}_open_ports.txt")
-
-    if [[ -n "$PORTS" ]]; then
-        print_blue "[*] Scanning ports: ${PORTS} on hosts in ${SCAN_TITLE}_live_hosts.txt"
+while IFS= read -r IP ; do
+    PORT=$(grep -E "$IP \(\)\s+Ports: " ${SCAN_TITLE}_phase3_Port_Disco.gnmap | grep -Eo "[0-9]+\/open" | grep -Eo "[0-9]+" | paste -sd',')
+    if [[ -n "$PORT" ]]; then
+        print_blue "[*] Sarting scan ${IP} -p ${PORT}"
         nmap -A -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m -Pn \
-             -iL "${SCAN_TITLE}_live_hosts.txt" \
-             -p "${PORTS}" \
-             -oA "${SCAN_TITLE}_phase4_DeepScan"
+                "$IP" \
+                -p "$PORT" \
+                -oA "${SCAN_TITLE}_phase4_DeepScan_HOST_${IP}"
     else
-        print_red "[!] Skipping Phase 4: Failed to format port list from ${SCAN_TITLE}_open_ports.txt."
+        # No ports found - print message and skip nmap for this IP
+        print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase3_Port_Disco.gnmap. Skipping Deep Scan."
     fi
-else
-    print_red "[!] Skipping Phase 4: Missing live hosts (${SCAN_TITLE}_live_hosts.txt) or open ports (${SCAN_TITLE}_open_ports.txt)."
-fi
+done < "${SCAN_TITLE}_live_hosts.txt"
+print_green "[+] Phase 4 complete"
+
+
+combine_nmap_xml() {
+  local output_file="${SCAN_TITLE}_Combined_DeepScan.xml"
+  local input_files="./${SCAN_TITLE}_phase4_DeepScan_HOST_*.xml"
+
+  if [ ${#input_files[@]} -eq 0 ]; then
+    echo "Warning: No input XML files specified." >&2
+    # Optionally create an empty output file or exit with a different code
+    touch "$output_file"
+    return 0
+  fi
+
+  echo "Combining the following Nmap XML files into '$output_file':"
+  for file in "${input_files[@]}"; do
+    if [ -f "$file" ]; then
+      echo "- $file"
+    else
+      echo "Warning: Input file '$file' not found and will be skipped." >&2
+    fi
+  done
+
+  # Create the root <nmaprun> element in the output file
+  echo '<?xml version="1.0" encoding="UTF-8"?>' > "$output_file"
+  echo '<nmaprun scanner="nmap" args="" start="'"$(date +%s)"'" version="7.xx" xmloutputversion="1.04">' >> "$output_file"
+  echo '<scaninfo type="syn" protocol="tcp" numservices="1000" services="1-1000"/>' >> "$output_file" # Generic scan info
+
+  # Loop through the input files and extract the <host> elements
+  for file in "${input_files[@]}"; do
+    if [ -f "$file" ]; then
+      echo "" >> "$output_file"
+      # Use awk to extract the <host>...</host> blocks
+      awk '/<host /,/<\/host>/{print}' "$file" >> "$output_file"
+    fi
+  done
+
+  # Close the root <nmaprun> element
+  echo '</nmaprun>' >> "$output_file"
+
+  echo "Successfully combined Nmap XML files into '$output_file'."
+  return 0
+}
+
+print_yellow "[+] combining xml's"
+combine_nmap_xml
 
 print_blue "--- Scan ${SCAN_TITLE} Complete ---"
