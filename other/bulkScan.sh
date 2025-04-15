@@ -27,10 +27,10 @@ fi
 read -p "Enter a unique scan title (e.g., ProjectX_Q1_Scan): " SCAN_TITLE
 read -p "Enter the path to the host list file: " HOST_LIST_FILE
 read -p "Enter number of --top-ports: " topPorts
-read -p "Enter a port to exclude: " ignore
+read -p "Enter a port to exclude (if this port is the only live port, scans will be excluded): " ignore
 Phase3default="-p-"
 echo "Phase 3 does a complete port discovery $Phase3default, you can overwrite that here (-p-/--top-ports X/skip) " 
-read -p "Skip will use results from Phase 2 : " Phase3Answer
+read -p "Skip will use results from Phase 2, I reccomend skipping or setting something other than -p-: " Phase3Answer
 Phase3=${Phase3Answer:-$Phase3default}
 
 # --- Input Validation ---
@@ -177,7 +177,7 @@ combine_nmap_xml() {
   return 0
 }
 
-print_yellow "[+] combining xml's"
+print_yellow "[+] combining xml"
 combine_nmap_xml
 
 print_blue "--- Scan ${SCAN_TITLE} Complete ---"
