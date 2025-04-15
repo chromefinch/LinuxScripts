@@ -118,7 +118,17 @@ while IFS= read -r IP ; do
                 -oA "${SCAN_TITLE}_phase4_DeepScan_HOST_${IP}"
     else
         # No ports found - print message and skip nmap for this IP
-        print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase3_Port_Disco.gnmap. Skipping Deep Scan."
+        print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase3_Port_Disco.gnmap. Trying Phase 1 sweep."
+        PORT=$(grep -E "$IP \(\)\s+Ports: " ${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap | grep -Eo "[0-9]+\/open" | grep -Eo "[0-9]+" | paste -sd',')
+        if [[ -n "$PORT" ]]; then
+            print_blue "[*] Sarting scan ${IP} -p ${PORT}"
+                nmap -A -T4 --max-retries 3 --max-rtt-timeout 300ms --host-timeout 8m -Pn \
+                        "$IP" \
+                        -p "$PORT" \
+                        -oA "${SCAN_TITLE}_phase4_DeepScan_HOST_${IP}"
+        else
+            print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap. Skipping."
+        fi
     fi
 done < "${SCAN_TITLE}_live_hosts.txt"
 print_green "[+] Phase 4 complete"
