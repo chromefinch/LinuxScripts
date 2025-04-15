@@ -46,16 +46,14 @@ clear
 print_yellow "--- Starting Scan: ${SCAN_TITLE} ---"
 print_yellow "--- Using Host List: ${HOST_LIST_FILE} ---"
 
-# --- Phase 1: Discovery (SYN Scan, Top 100, No Ping) ---
+# --- Phase 1: Discovery (SYN Scan, Top X, No Ping) ---
 print_blue "[+] Phase 1: Discovery Scan (Top $topPorts Ports, No Ping)"
-nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m -Pn -n \
+nmap -sS -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m --max-scan-delay 5 --min-rate 800 -Pn -n \
      -iL "${HOST_LIST_FILE}" \
      --top-ports $topPorts \
      -oA "${SCAN_TITLE}_phase1_Top${topPorts}Ports"
 
 # --- Phase 2: Ping Sweep (Optional - Run against original list) ---
-# Note: Phase 1 already performs discovery via SYN packets.
-# This phase performs an ICMP/ARP based discovery on the original list.
 print_blue "[+] Phase 2: Ping Sweep on original list"
 nmap -sn -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 5m -n \
      -iL "${HOST_LIST_FILE}" \
@@ -80,7 +78,7 @@ fi
 phaseThree(){
 print_blue "[+] Phase 3: Scan All Ports on Live Hosts"
 if [[ -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
-    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 10m --max-scan-delay 3 \
+    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 5m  --max-scan-delay 5 --min-rate 800 \
          -iL "${SCAN_TITLE}_live_hosts.txt" \
          $Phase3 \
          -oA "${SCAN_TITLE}_phase3_Port_Disco"
@@ -114,7 +112,7 @@ while IFS= read -r IP ; do
     PORT=$(grep -E "$IP \(\)\s+Ports: " ${SCAN_TITLE}_phase3_Port_Disco.gnmap | grep -Eo "[0-9]+\/open" | grep -Eo "[0-9]+" | paste -sd',')
     if [[ -n "$PORT" ]]; then
         print_blue "[*] Sarting scan ${IP} -p ${PORT}"
-        nmap -A -T4 --max-retries 1 --max-rtt-timeout 300ms --host-timeout 1m -Pn \
+        nmap -A -T4 --max-retries 3 --max-rtt-timeout 300ms --host-timeout 8m -Pn \
                 "$IP" \
                 -p "$PORT" \
                 -oA "${SCAN_TITLE}_phase4_DeepScan_HOST_${IP}"
@@ -128,10 +126,13 @@ print_green "[+] Phase 4 complete"
 # This is sloppy, but hopefully it imports to 
 combine_nmap_xml() {
   local output_file="${SCAN_TITLE}_Combined_DeepScan.xml"
-  local input_files="./${SCAN_TITLE}_phase4_DeepScan_HOST_*.xml"
+  local input_files
+
+  # Find all matching XML files and store them in an array
+  input_files=($(find . -maxdepth 1 -name "${SCAN_TITLE}_phase4_DeepScan_HOST_*.xml" -print0 | xargs -0))
 
   if [ ${#input_files[@]} -eq 0 ]; then
-    echo "Warning: No input XML files specified." >&2
+    echo "Warning: No input XML files found matching './${SCAN_TITLE}_phase4_DeepScan_HOST_*.xml'." >&2
     # Optionally create an empty output file or exit with a different code
     touch "$output_file"
     return 0
@@ -148,15 +149,14 @@ combine_nmap_xml() {
 
   # Create the root <nmaprun> element in the output file
   echo '<?xml version="1.0" encoding="UTF-8"?>' > "$output_file"
-  echo '<nmaprun scanner="nmap" args="" start="'"$(date +%s)"'" version="7.xx" xmloutputversion="1.04">' >> "$output_file"
+  echo "<nmaprun scanner=\"nmap\" args=\"\" start=\"$(date +%s)\" version=\"7.xx\" xmloutputversion=\"1.04\">" >> "$output_file"
   echo '<scaninfo type="syn" protocol="tcp" numservices="1000" services="1-1000"/>' >> "$output_file" # Generic scan info
 
   # Loop through the input files and extract the <host> elements
   for file in "${input_files[@]}"; do
     if [ -f "$file" ]; then
-      echo "" >> "$output_file"
-      # Use awk to extract the <host>...</host> blocks
-      awk '/<host /,/<\/host>/{print}' "$file" >> "$output_file"
+      # Use awk to extract the <host>...</host> blocks, ensuring proper XML structure
+      awk '/<host /,/<\/host>/{if (!/<host .*up=\"down\"/.test($0)) print}' "$file" >> "$output_file"
     fi
   done
 
