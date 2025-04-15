@@ -127,7 +127,7 @@ while IFS= read -r IP ; do
                         -p "$PORT" \
                         -oA "${SCAN_TITLE}_phase4_DeepScan_HOST_${IP}"
         else
-            print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap. Skipping."
+            print_red "[!] No open ports found for ${IP} in ${SCAN_TITLE}_phase1_Top${topPorts}Ports.gnmap. Skipping Deep Scan."
         fi
     fi
 done < "${SCAN_TITLE}_live_hosts.txt"
