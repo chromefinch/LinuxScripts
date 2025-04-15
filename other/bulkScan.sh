@@ -80,7 +80,7 @@ fi
 phaseThree(){
 print_blue "[+] Phase 3: Scan All Ports on Live Hosts"
 if [[ -s "${SCAN_TITLE}_live_hosts.txt" ]]; then
-    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 8m \
+    nmap -sS -Pn -n -T4 --max-retries 2 --max-rtt-timeout 300ms --host-timeout 10m --max-scan-delay 3 \
          -iL "${SCAN_TITLE}_live_hosts.txt" \
          $Phase3 \
          -oA "${SCAN_TITLE}_phase3_Port_Disco"
@@ -125,7 +125,7 @@ while IFS= read -r IP ; do
 done < "${SCAN_TITLE}_live_hosts.txt"
 print_green "[+] Phase 4 complete"
 
-
+# This is sloppy, but hopefully it imports to 
 combine_nmap_xml() {
   local output_file="${SCAN_TITLE}_Combined_DeepScan.xml"
   local input_files="./${SCAN_TITLE}_phase4_DeepScan_HOST_*.xml"
