@@ -525,12 +525,16 @@ vmwareSux() {
     msg_info "Check here for latest version: https://softwareupdate.vmware.com/cds/vmw-desktop/ws/" && echo -e "\n" 
     read -p "Enter the FULL download url for the version you'd like ($vmwareopt) " vmwareDL 
     echo -e "\n" 
-    vmwareLink=${vmwareDL:-$vmwaredefault}
-    vmwareFile=$(echo $vmwareLink | grep -oE "VMware-Workstation.*$")
+    vmwareFiledefault="VMware-Workstation-Full-17.6.3-24583834.x86_64.bundle"
+    read -p  "Enter File Name here ($vmwareFiledefault): " vmwareFilea
+    vmwareLink=${vmwareDL:-$vmwareFiledefault}
+    vmwareFile=$${vmwareFilea:-$vmwareFiledefault}
     vmwareBundle=$(echo $vmwareFile | grep -oE "VMware-Work.*\.bundle")
     msg_info "downloading $vmwareFile" && echo -e "\n" 
     vmwareV=$(echo $vmwareFile | sed 's|VMware-Workstation-|VMware Workstation |g' | sed 's|.x86_64.bundle.tar||g' | sed 's|-| build-|g')
-    test -f /home/$userid/Downloads/$vmwareFile&&msg_info "VMware already downloaded" && echo -e "\n" || wget -q $vmwareLink -P /home/$userid/Downloads && msg_info "unzipping $vmwareFile" && echo -e "\n" && $STD sudo tar -xvf /home/$userid/Downloads/$vmwareFile -C /home/$userid/Downloads/ && $STD sudo chmod +x $vmwareBundle && $STD sudo chown $userid:$userid /home/$userid/Downloads/*
+    test -f /home/$userid/Downloads/$vmwareFile&&msg_info "VMware already downloaded" && echo -e "\n" || wget -q $vmwareLink -P /home/$userid/Downloads 
+    #msg_info "unzipping $vmwareFile" && echo -e "\n" && $STD sudo tar -xvf /home/$userid/Downloads/$vmwareFile -C /home/$userid/Downloads/  --not supporting tar due to VMware constantly changing shit
+    $STD sudo chmod +x $vmwareBundle && $STD sudo chown $userid:$userid /home/$userid/Downloads/*
       #echo getting fixes
       #test -f /home/$userid/Downloads/workstation-$vmwareFIXversion.tar.gz&&echo 'VMware fix already downloaded' || wget https://github.com/mkubecek/vmware-host-modules/archive/workstation-$vmwareFIXversion.tar.gz -P /home/$userid/Downloads
       #cd /home/$userid/Downloads
