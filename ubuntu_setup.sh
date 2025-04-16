@@ -542,7 +542,20 @@ vmwareSux() {
       #tar -cf vmmon.tar vmmon-only;
       #tar -cf vmnet.tar vmnet-only;
     vc="vmware"
-    which "$vc" | grep -o "$vc" > /dev/null &&  msg_ok "$vc already installed" && echo -e "\n" || msg_info "Installing $vmwareBundle" && sudo bash /home/$userid/Downloads/$vmwareBundle --eulas-agreed --console --required && msg_ok "$vmwareV installed" && echo -e "\n"
+    if which "$vc" > /dev/null 2>&1; then
+        msg_ok "$vc already installed"
+        echo -e "\n" 
+    else
+        msg_info "Installing $vmwareBundle"
+        echo -e "\n" 
+        if sudo bash "/home/$userid/Downloads/$vmwareBundle" --eulas-agreed --console --required; then
+            msg_ok "$vmwareV installed"
+            echo -e "\n" 
+        else
+            msg_error "Installation of $vmwareBundle failed"
+            echo -e "\n" 
+        fi
+    fi
       #cp -v vmmon.tar vmnet.tar /usr/lib/vmware/modules/source/;
       #sudo vmware-modconfig --console --install-all;
     msg_info "if there are VMware service failures (vmmon vmnet) or anyother VMware issues, check if SecureBoot is enabled and visit; https://www.centennialsoftwaresolutions.com/post/ubuntu-20-04-3-lts-and-vmware-issues" && echo -e "\n"
