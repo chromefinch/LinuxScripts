@@ -528,11 +528,10 @@ vmwareSux() {
     vmwareFiledefault="VMware-Workstation-Full-17.6.3-24583834.x86_64.bundle"
     read -p  "Enter File Name here ($vmwareFiledefault): " vmwareFilea
     vmwareLink=${vmwareDL:-$vmwareFiledefault}
-    vmwareFile=$${vmwareFilea:-$vmwareFiledefault}
-    vmwareBundle=$(echo $vmwareFile | grep -oE "VMware-Work.*\.bundle")
-    msg_info "downloading $vmwareFile" && echo -e "\n" 
-    vmwareV=$(echo $vmwareFile | sed 's|VMware-Workstation-|VMware Workstation |g' | sed 's|.x86_64.bundle.tar||g' | sed 's|-| build-|g')
-    test -f /home/$userid/Downloads/$vmwareFile&&msg_info "VMware already downloaded" && echo -e "\n" || wget -q $vmwareLink -P /home/$userid/Downloads 
+    vmwareBundle=$${vmwareFilea:-$vmwareFiledefault}
+    msg_info "downloading $vmwareBundle" && echo -e "\n" 
+    vmwareV=$(echo $vmwareBundle | sed 's|VMware-Workstation-|VMware Workstation |g' | sed 's|.x86_64.bundle||g' | sed 's|-| build-|g')
+    test -f /home/$userid/Downloads/$vmwareBundle&&msg_info "VMware already downloaded" && echo -e "\n" || wget -q $vmwareLink -P /home/$userid/Downloads 
     #msg_info "unzipping $vmwareFile" && echo -e "\n" && $STD sudo tar -xvf /home/$userid/Downloads/$vmwareFile -C /home/$userid/Downloads/  --not supporting tar due to VMware constantly changing shit
     $STD sudo chmod +x $vmwareBundle && $STD sudo chown $userid:$userid /home/$userid/Downloads/*
       #echo getting fixes
