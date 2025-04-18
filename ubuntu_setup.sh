@@ -205,6 +205,7 @@ apps() {
     ostree
     appstream-util
     rename
+    parallel
 EOF
 )
     while read -r p ; do $STD sudo snap install $p && msg_ok "$p installed" ; done < <(cat << "EOF"
