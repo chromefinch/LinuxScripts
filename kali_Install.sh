@@ -199,6 +199,7 @@ apps() {
     lynis
     net-tools
     mingw-w64
+    parallel
 EOF
 )
     msg_info "Installing flathub"
