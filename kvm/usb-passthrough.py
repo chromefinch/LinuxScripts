@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import re
 from typing import Optional, List, Dict
 
+# place in /usr/local/sbin/usb-passthrough.py
 # Configuration
 CONFIG = {
     "win11-2": {
