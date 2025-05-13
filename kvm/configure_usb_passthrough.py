@@ -57,12 +57,13 @@ def get_usb_controller_info() -> list[str]:
 
 
 
-def update_config_file(controller_paths: list[str]) -> None:
+def update_config_file(controller_paths: list[str], vm_name: str) -> None:
     """
     Updates the CONFIG section in the qemu_usb_passthrough_script.py file.
 
     Args:
         controller_paths: A list of USB controller paths.
+        vm_name: The name of the virtual machine.
     """
     if not os.path.exists(QEMU_USB_SCRIPT_PATH):
         log(f"Error: {QEMU_USB_SCRIPT_PATH} not found.")
@@ -88,7 +89,7 @@ def update_config_file(controller_paths: list[str]) -> None:
             return
 
         # Construct the new CONFIG section
-        new_config = 'CONFIG = {\n    "win11-2": {\n        "usb_controllers": [\n'
+        new_config = f'CONFIG = {{\n    "{vm_name}": {{\n        "usb_controllers": [\n'
         for path in controller_paths:
             new_config += f'            "{path}",\n'
         new_config += "        ],\n    },\n}\n"
@@ -183,7 +184,9 @@ def main() -> None:
         sys.exit(1)
 
     log(f"Found USB controllers: {controller_paths}")
-    update_config_file(controller_paths)
+
+    vm_name = input("Enter the name of the QEMU/libvirt VM: ")
+    update_config_file(controller_paths, vm_name)
     update_udev_rules(controller_paths)
 
     # Print a helpful message to the user, including the script path.
