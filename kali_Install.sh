@@ -200,6 +200,7 @@ apps() {
     net-tools
     mingw-w64
     parallel
+    yersinia
 EOF
 )
     msg_info "Installing flathub"
