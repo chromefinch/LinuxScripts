@@ -201,6 +201,7 @@ apps() {
     mingw-w64
     parallel
     yersinia
+    flameshot
 EOF
 )
     msg_info "Installing flathub"
