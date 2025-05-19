@@ -202,6 +202,7 @@ apps() {
     parallel
     yersinia
     flameshot
+    dysk
 EOF
 )
     msg_info "Installing flathub"
