@@ -27,7 +27,8 @@ sudo cp /etc/apt/apt.conf.d/50unattended-upgrades /etc/apt/apt.conf.d/50unattend
 
 # Use sed to modify the file. This is a bit fragile if the file format changes significantly
 # Uncomment the line to include regular updates (not just security)
-sudo sed -i 's/\/\/ "${distro_id}:${distro_codename}-updates";/"${distro_id}:${distro_codename}-updates";/' /etc/apt/apt.conf.d/50unattended-upgrades
+# Use a more robust sed command that handles potential variations in spacing
+sudo sed -i '/^ *\/\/ *"*\${distro_id}:\${distro_codename}-updates"*;/{s/\/\/ *//}' /etc/apt/apt.conf.d/50unattended-upgrades
 
 # Uncomment and set automatic reboot if required
 # Ensure the line exists before attempting to uncomment/modify
@@ -56,7 +57,9 @@ echo "Configuring /etc/apt/apt.conf.d/20auto-upgrades for weekly runs..."
 # This is often interactive, but the -plow priority might make it non-interactive
 # If it prompts, select 'Yes' for automatic updates.
 echo "Running dpkg-reconfigure unattended-upgrades (may prompt)..."
-sudo dpkg-reconfigure -plow unattended-upgrades
+# Use a non-interactive approach for dpkg-reconfigure
+echo "unattended-upgrades unattended-upgrades/enable_auto_updates boolean true" | sudo debconf-set-selections
+sudo dpkg-reconfigure -f noninteractive unattended-upgrades
 
 # Now, modify the periodic settings to weekly
 sudo cp /etc/apt/apt.conf.d/20auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades.bak.$(date +%Y%m%d_%H%M%S)
@@ -71,21 +74,23 @@ echo "Finished configuring 20auto-upgrades for weekly runs."
 # --- Step 4: Create systemd timer overrides for specific weekly schedule ---
 echo "Creating systemd timer overrides for weekly schedule (${UPDATE_DAY} at ${UPDATE_TIME_UPDATE} and ${UPDATE_TIME_UPGRADE})..."
 
-# Create override for apt-daily.timer (for apt update)
-sudo systemctl edit apt-daily.timer <<EOF
-[Timer]
+# Create directory for apt-daily.timer override
+sudo mkdir -p /etc/systemd/system/apt-daily.timer.d/
+
+# Create override file for apt-daily.timer (for apt update)
+echo "[Timer]
 OnCalendar=${UPDATE_DAY} *-*-* ${UPDATE_TIME_UPDATE}:00
 RandomizedDelaySec=0
-Persistent=true
-EOF
+Persistent=true" | sudo tee /etc/systemd/system/apt-daily.timer.d/override.conf > /dev/null
 
-# Create override for apt-daily-upgrade.timer (for unattended-upgrade)
-sudo systemctl edit apt-daily-upgrade.timer <<EOF
-[Timer]
+# Create directory for apt-daily-upgrade.timer override
+sudo mkdir -p /etc/systemd/system/apt-daily-upgrade.timer.d/
+
+# Create override file for apt-daily-upgrade.timer (for unattended-upgrade)
+echo "[Timer]
 OnCalendar=${UPDATE_DAY} *-*-* ${UPDATE_TIME_UPGRADE}:00
 RandomizedDelaySec=0
-Persistent=true
-EOF
+Persistent=true" | sudo tee /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf > /dev/null
 
 echo "Finished creating systemd timer overrides."
 
