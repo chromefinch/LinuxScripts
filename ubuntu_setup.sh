@@ -206,6 +206,8 @@ apps() {
     appstream-util
     rename
     parallel
+    drawing
+    flameshot
 EOF
 )
     while read -r p ; do $STD sudo snap install $p && msg_ok "$p installed" ; done < <(cat << "EOF"
