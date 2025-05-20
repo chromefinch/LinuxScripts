@@ -202,6 +202,7 @@ apps() {
     parallel
     yersinia
     flameshot
+    drawing
     dysk
 EOF
 )
