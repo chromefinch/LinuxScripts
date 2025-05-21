@@ -256,8 +256,10 @@ tmuxStuff() {
     cat << EOF >> /home/$userid/$term
 fastfetch
 alias update="sudo apt update && sudo apt upgrade -y && sudo flatpak update && sudo searchsploit -u"
-alias netrset="sudo service networking restart && ip -br a"
+alias netrset="sudo ~/LinuxScripts/network/netrestart.sh"
 alias cpu='watch -n 1 "cat /proc/cpuinfo | grep \"cpu MHz\" | awk '\''{printf \"%.2f GHz\\n\", \$NF/1000}'\'' " '
+alias newip='sudo ~/LinuxScripts/network/NewIP.sh'
+alias moreip='sudo ~/LinuxScripts/network/MoreIPsPlease.sh'
 #alreadydoneflag
 EOF
     sudo chown $userid:$userid /home/$userid/$term
@@ -400,6 +402,7 @@ keyMenu() {
 
 allDone() {
   msg_ok "Ok, I think we're done!\n"
+  git clone https://github.com/chromefinch/LinuxScripts.git ~/
   case $rebootq in 
     [yY]) echo "install app icons taskbar by visiting the following link: https://extensions.gnome.org/extension/4944/app-icons-taskbar/"
         sleep 3
