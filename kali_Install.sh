@@ -403,6 +403,7 @@ keyMenu() {
 allDone() {
   msg_ok "Ok, I think we're done!\n"
   git clone https://github.com/chromefinch/LinuxScripts.git ~/
+  chmod +x -R ~/LinuxScripts/network
   case $rebootq in 
     [yY]) echo "install app icons taskbar by visiting the following link: https://extensions.gnome.org/extension/4944/app-icons-taskbar/"
         sleep 3
