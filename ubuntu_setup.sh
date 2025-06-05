@@ -231,6 +231,7 @@ flatHub() {
         com.github.tchx84.Flatseal
         org.keepassxc.KeePassXC
         io.github.peazip.PeaZip
+        io.missioncenter.MissionCenter
 EOF
 )
 }
