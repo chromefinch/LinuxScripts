@@ -214,6 +214,7 @@ EOF
     org.onlyoffice.desktopeditors
     com.jetbrains.PyCharm-Community
     com.github.tchx84.Flatseal
+    io.missioncenter.MissionCenter
 EOF
 )
 #$STD sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
