@@ -83,17 +83,36 @@ fi
 echo ""
 print_yellow "Please provide the configuration details for the new VLANs."
 
-# Get VLAN IDs
-read -p "Enter a space-separated list of VLAN IDs (e.g., 10 20 30): " -a VLAN_IDS
-if [ ${#VLAN_IDS[@]} -eq 0 ]; then
-    print_red "No VLAN IDs provided. Exiting."
+# Get VLAN Range or single ID
+read -p "Enter a VLAN range (e.g., 10-20) or a single VLAN ID: " VLAN_INPUT
+
+declare -a VLAN_IDS
+# Check if input is a range
+if [[ "$VLAN_INPUT" =~ ^[0-9]+-[0-9]+$ ]]; then
+    START_VLAN=$(echo "$VLAN_INPUT" | cut -d- -f1)
+    END_VLAN=$(echo "$VLAN_INPUT" | cut -d- -f2)
+    if [ "$START_VLAN" -ge "$END_VLAN" ]; then
+        print_red "Error: The start of the VLAN range must be less than the end."
+        exit 1
+    fi
+    VLAN_IDS=($(seq "$START_VLAN" "$END_VLAN"))
+# Check if input is a single number
+elif [[ "$VLAN_INPUT" =~ ^[0-9]+$ ]]; then
+    VLAN_IDS=("$VLAN_INPUT")
+else
+    print_red "Error: Invalid VLAN input format. Please use a range (e.g., 10-20) or a single number."
     exit 1
 fi
 
-# Get Starting IP Address
-read -p "Enter the starting IP address for the first VLAN: " START_IP
-if ! [[ "$START_IP" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-    print_red "Error: Invalid start IP address format: $START_IP"
+if [ ${#VLAN_IDS[@]} -eq 0 ]; then
+    print_red "No valid VLAN IDs were parsed. Exiting."
+    exit 1
+fi
+
+# Get the single IP Address
+read -p "Enter the IP address to assign to all VLANs: " IP_ADDRESS
+if ! [[ "$IP_ADDRESS" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    print_red "Error: Invalid IP address format: $IP_ADDRESS"
     exit 1
 fi
 
@@ -116,6 +135,7 @@ fi
 echo ""
 print_purple "--- VLAN Configuration Summary ---"
 print_blue "Parent Interface:   $IFACE"
+print_blue "IP for all VLANs:   ${IP_ADDRESS}/${PREFIX}"
 if [ -n "$GATEWAY" ]; then
     print_blue "Gateway for all VLANs: $GATEWAY"
 else
@@ -124,11 +144,6 @@ fi
 echo "----------------------------------------------------------------"
 printf "%-10s | %-20s | %-20s\n" "VLAN ID" "Interface Name" "IP Address"
 echo "----------------------------------------------------------------"
-
-# Prepare for IP calculation
-ip_prefix=$(echo "$START_IP" | cut -d '.' -f 1,2,3)
-last_octet_start=$(echo "$START_IP" | awk -F"." '{print $4}')
-ip_counter=0
 
 # Store commands for later execution
 declare -a COMMANDS_TO_RUN
@@ -139,26 +154,18 @@ for vlan_id in "${VLAN_IDS[@]}"; do
         continue
     fi
 
-    current_octet=$((last_octet_start + ip_counter))
-    if [ "$current_octet" -gt 254 ]; then
-        print_red "Error: Calculated IP address octet exceeds 254. Stopping."
-        break
-    fi
-
-    current_ip="${ip_prefix}.${current_octet}"
     vlan_iface="${IFACE}.${vlan_id}"
     con_name="vlan-${vlan_id}-on-${IFACE}"
 
     # Print summary row
-    printf "%-10s | %-20s | %-20s\n" "$vlan_id" "$vlan_iface" "${current_ip}/${PREFIX}"
+    printf "%-10s | %-20s | %-20s\n" "$vlan_id" "$vlan_iface" "${IP_ADDRESS}/${PREFIX}"
 
     # Store the commands
     COMMANDS_TO_RUN+=("nmcli connection add type vlan con-name \"$con_name\" ifname \"$vlan_iface\" id \"$vlan_id\" dev \"$IFACE\"")
     gateway_arg=$([ -n "$GATEWAY" ] && echo "ipv4.gateway $GATEWAY" || echo "ipv4.gateway ''")
-    COMMANDS_TO_RUN+=("nmcli connection modify \"$con_name\" ipv4.method manual ipv4.addresses \"${current_ip}/${PREFIX}\" $gateway_arg")
+    COMMANDS_TO_RUN+=("nmcli connection modify \"$con_name\" ipv4.method manual ipv4.addresses \"${IP_ADDRESS}/${PREFIX}\" $gateway_arg")
     COMMANDS_TO_RUN+=("nmcli connection up \"$con_name\"")
 
-    ip_counter=$((ip_counter + 1))
 done
 echo "----------------------------------------------------------------"
 echo ""
