@@ -217,6 +217,8 @@ EOF
     io.missioncenter.MissionCenter
 EOF
 )
+msg_info "Installing penelope"
+pipx install git+https://github.com/brightio/penelope
 #$STD sudo gzip -d /usr/share/wordlists/rockyou.txt.gz
 }
 
