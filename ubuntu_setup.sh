@@ -196,6 +196,7 @@ apps() {
     libvirt-daemon-system
     libvirt-clients
     bridge-utils
+    cifs-utils
     virtinst
     virt-manager
     net-tools
