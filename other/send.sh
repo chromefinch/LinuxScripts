@@ -1,4 +1,5 @@
 #!/bin/bash
+# https://aadinternals.com/osint/
 
 # ==============================================================================
 # Swaks Unauthenticated Email Test Script
