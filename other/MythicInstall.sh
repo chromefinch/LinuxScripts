@@ -8,25 +8,16 @@ sudo make
 sudo ./mythic-cli start
 
 #C2 Profiles
-sudo ./mythic-cli install github https://github.com/MythicC2Profiles/websocket.git
-sudo ./mythic-cli c2 start websocket
-sudo ./mythic-cli install github https://github.com/MythicC2Profiles/http
-sudo ./mythic-cli c2 start http
-sudo ./mythic-cli install github https://github.com/MythicC2Profiles/httpx
-sudo ./mythic-cli c2 start httpx
-sudo ./mythic-cli install github https://github.com/MythicC2Profiles/smb
-sudo ./mythic-cli c2 start smb
-sudo ./mythic-cli install github https://github.com/MythicC2Profiles/dynamichttp
-sudo ./mythic-cli c2 start dynamichttp
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/websocket.git -f
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/http -f
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/httpx -f
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/smb -f
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/dynamichttp -f
 
 #Agents
-sudo ./mythic-cli install github https://github.com/MythicAgents/Apollo.git
-sudo ./mythic-cli payload start apollo
-sudo ./mythic-cli install github https://github.com/MythicAgents/bloodhound.git
-sudo ./mythic-cli payload start bloodhound
-sudo ./mythic-cli install github https://github.com/MythicAgents/thanatos
-sudo ./mythic-cli payload start thanatos
-sudo ./mythic-cli install github https://github.com/MythicAgents/Medusa.git
-sudo ./mythic-cli payload start medusa
+sudo ./mythic-cli install github https://github.com/MythicAgents/Apollo.git -f
+sudo ./mythic-cli install github https://github.com/MythicAgents/bloodhound.git -f
+sudo ./mythic-cli install github https://github.com/MythicAgents/thanatos -f
+sudo ./mythic-cli install github https://github.com/MythicAgents/Medusa.git -f
 sudo ./mythic-cli restart
 grep -i mythic_admin .env
