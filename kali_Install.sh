@@ -405,6 +405,7 @@ keyMenu() {
 
 allDone() {
   msg_ok "Ok, I think we're done!\n"
+  git clone https://github.com/chromefinch/nmap-did-what.git /home/$userid/
   git clone https://github.com/chromefinch/LinuxScripts.git /home/$userid/
   chmod +x -R /home/$userid/LinuxScripts/network
   case $rebootq in 
