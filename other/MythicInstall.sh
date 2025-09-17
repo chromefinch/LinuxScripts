@@ -12,6 +12,12 @@ sudo ./mythic-cli install github https://github.com/MythicC2Profiles/websocket.g
 sudo ./mythic-cli c2 start websocket
 sudo ./mythic-cli install github https://github.com/MythicC2Profiles/http
 sudo ./mythic-cli c2 start http
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/httpx
+sudo ./mythic-cli c2 start httpx
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/smb
+sudo ./mythic-cli c2 start smb
+sudo ./mythic-cli install github https://github.com/MythicC2Profiles/dynamichttp
+sudo ./mythic-cli c2 start dynamichttp
 
 #Agents
 sudo ./mythic-cli install github https://github.com/MythicAgents/Apollo.git
