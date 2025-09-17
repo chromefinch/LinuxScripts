@@ -234,6 +234,9 @@ mscode() {
 tmuxStuff() {
   msg_info "tmux fun"
   cd /home/$userid/
+  git clone https://github.com/chromefinch/nmap-did-what.git
+  git clone https://github.com/chromefinch/LinuxScripts.git
+  chmod +x -R ./LinuxScripts/network
   test -d /home/$userid/.tmux.bk&&sudo rm -rf /home/$userid/.tmux.bk
   test -d /home/$userid/.tmux.conf.local.bk&&sudo rm -rf /home/$userid/.tmux.conf.local.bk
   test -d /home/$userid/.tmux&&sudo mv -f /home/$userid/.tmux /home/$userid/.tmux.bk
@@ -405,9 +408,6 @@ keyMenu() {
 
 allDone() {
   msg_ok "Ok, I think we're done!\n"
-  git clone https://github.com/chromefinch/nmap-did-what.git /home/$userid/
-  git clone https://github.com/chromefinch/LinuxScripts.git /home/$userid/
-  chmod +x -R /home/$userid/LinuxScripts/network
   case $rebootq in 
     [yY]) echo "install app icons taskbar by visiting the following link: https://extensions.gnome.org/extension/4944/app-icons-taskbar/"
         sleep 3
