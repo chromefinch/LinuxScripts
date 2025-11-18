@@ -190,8 +190,9 @@ fi
 # 9. Automatic VFIO Device Binding for ALL Nvidia Devices
 echo -e "${YELLOW}--- STEP 9: AUTOMATIC NVIDIA VFIO BINDING ---${NC}"
 
-# Find all Nvidia devices (Vendor ID 10de) and extract their IDs in the format XXXX:YYYY
-NVIDIA_IDS=$(lspci -nn | awk '/NVIDIA Corporation/ {print $NF}' | sed 's/[[\]//g' | tr '\n' ',' | sed 's/,$//')
+# Find all Nvidia devices (Vendor ID 10de) and extract their IDs in the format XXXX:YYYY.
+# This fixes the awk error by using grep to specifically find the Vendor:Device ID pattern.
+NVIDIA_IDS=$(lspci -nn | grep -i 'NVIDIA Corporation' | grep -oE '[0-9a-f]{4}:[0-9a-f]{4}' | tr '\n' ',' | sed 's/,$//')
 
 if [[ -z "$NVIDIA_IDS" ]]; then
     echo -e "${RED}No Nvidia devices found via lspci. Skipping automatic binding.${NC}"
