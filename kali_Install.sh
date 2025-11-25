@@ -327,7 +327,7 @@ rando() {
         do
         array[$RANDOM]=$i
     done
-    stubsthename=$(printf %s ${array[@]::12})
+    stubsthename="a-$(printf %s ${array[@]::12})"
     # Quote the variables to handle potential spaces or special characters in the hostname
     $STD sudo sed -i "s/$old/$stubsthename/g" /etc/hosts  # Use \< and \> for word boundaries
     $STD sudo sed -i "s/$old/$stubsthename/g" /etc/hostname # Use \< and \> for word boundaries
