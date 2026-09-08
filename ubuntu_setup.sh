@@ -209,6 +209,8 @@ apps() {
     parallel
     drawing
     flameshot
+    libreoffice
+    lm-sensors
 EOF
 )
     while read -r p ; do $STD sudo snap install $p && msg_ok "$p installed" ; done < <(cat << "EOF"
@@ -228,7 +230,6 @@ flatHub() {
     sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     msg_ok "Flathub installed"
     while read -r p ; do $STD sudo flatpak install --or-update flathub $p -y --noninteractive && msg_ok "flathub $p installed" ; done < <(cat << "EOF"
-        org.onlyoffice.desktopeditors
         com.github.tchx84.Flatseal
         org.keepassxc.KeePassXC
         io.github.peazip.PeaZip
@@ -712,7 +713,21 @@ custom() {
 }
 
 
-if ! hostnamectl | grep -Eq "Operating System: Ubuntu 24\.[\.0-9]{2,}"; then
+os_info=$(hostnamectl | grep "Operating System:")
+
+if ! echo "$os_info" | grep -q "Ubuntu"; then
+  echo -e "This version of Linux is not supported"
+  echo -e "Requires Ubuntu 24.04 or higher"
+  echo -e "Exiting..."
+  sleep 2
+  exit
+fi
+
+version=$(echo "$os_info" | grep -oP '\d+\.\d+' | head -1)
+major=$(echo "$version" | cut -d. -f1)
+minor=$(echo "$version" | cut -d. -f2)
+
+if [ -z "$major" ] || [ "$major" -lt 24 ]; then
   echo -e "This version of Linux is not supported"
   echo -e "Requires Ubuntu 24.04 or higher"
   echo -e "Exiting..."
