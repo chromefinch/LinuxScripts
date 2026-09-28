@@ -168,7 +168,7 @@ letsUpdate() {
     $STD sudo DEBIAN_FRONTEND=noninteractive apt --fix-broken install -y 
     msg_ok "apt fix done"
     msg_info "updating searchsploit"
-    $STD sudo searchsploit -u
+    $STD sudo searchsploit -u || true
     msg_ok "searchsploit updated"
     msg_info "running update one more again"
     $STD sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
