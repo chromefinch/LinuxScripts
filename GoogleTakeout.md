@@ -6,9 +6,9 @@ Create a new file named `takeout.sh` (`nano takeout.sh`), paste the following co
 #!/bin/bash
 
 TOTAL_PARTS=114
-BASE_NAME="takeout-20261022T134115Z-2"
-TOKEN="dffb16f1-078e-4ba8-b821-2c88af0f0056"
-USER_ID="994544836516"
+BASE_NAME="takeout-blah"
+TOKEN="token"
+USER_ID="user"
 
 for n in $(seq 1 $TOTAL_PARTS); do
   padded=$(printf "%03d" $n)
